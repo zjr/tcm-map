@@ -1,0 +1,15 @@
+{
+	"types": [
+		{ "type": "feat", "section": "✨  Features" },
+		{ "type": "fix", "section": "🐛  Bug Fixes" },
+		{ "type": "perf", "section": "🏎  Performance Improvements" },
+		{ "type": "build", "section": "🏗  Build System" },
+		{ "type": "ci", "section": "🏗  Build System" },
+		{ "type": "docs", "section": "📖  Documentation" },
+		{ "type": "test", "section": "🧪  Testing" },
+		{ "type": "chore", "section": "🆒  Chores, Maintenance & Refactors" },
+		{ "type": "refactor", "section": "🆒  Chores, Maintenance & Refactors" },
+		{ "type": "style", "hidden": true },
+		{ "type": "revert", "hidden": true }
+	]
+}

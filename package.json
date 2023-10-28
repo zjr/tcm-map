@@ -4,14 +4,11 @@
 	"private": true,
 	"description": "",
 	"scripts": {
-		"release": "standard-version",
 		"commit": "commit",
-		"prettier:check": "prettier --check 'src/**/*'",
-		"prettier:fix": "prettier --write 'src/**/*'",
+		"release": "standard-version",
 		"prepare": "husky install",
 		"h:pre-commit": "lint-staged",
-		"dev": "DEBUG=tcmmap:* node ./bin/www",
-		"tailwind:css": "postcss src/styles/tailwind.css -o src/public/styles/style.css"
+		"dev": "bin/build watch & DEBUG=tcmmap:* nodemon --delay 1 -e pug,js bin/www"
 	},
 	"lint-staged": {
 		"*": "prettier --ignore-unknown --write",
@@ -46,6 +43,7 @@
 		"eslint-config-prettier": "^9.0.0",
 		"husky": "^8.0.3",
 		"lint-staged": "^15.0.2",
+		"nodemon": "^3.0.1",
 		"postcss": "^8.4.31",
 		"postcss-url": "^10.1.3",
 		"prettier": "^3.0.3",

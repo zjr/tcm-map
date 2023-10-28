@@ -4,7 +4,7 @@ const esbuild = require('esbuild');
 const postCssPlugin = require('esbuild-postcss');
 const path = require('path');
 
-const chalk = require('chalk');
+const log = require('debug')('tcmmap:esbuild');
 const chokidar = require('chokidar');
 
 const watch = process.argv.indexOf('watch') >= 0;
@@ -25,19 +25,13 @@ const builderConfig = {
 	plugins: [postCssPlugin()]
 };
 
-function log(msg) {
-	console.log(chalk.dim(msg));
-}
-
 function rebuild(ctx, path) {
 	building = true;
 
-	if (!init) log(`[watch] build started (change: "${path}")`);
+	if (!init) log(`started (change: "${path}")`);
 
 	ctx.rebuild().then(() => {
-		const msg = init
-			? '[watch] build finished, watching for changes...'
-			: '[watch] build finished';
+		const msg = init ? 'finished, watching for changes...' : 'finished';
 
 		init = false;
 		building = false;

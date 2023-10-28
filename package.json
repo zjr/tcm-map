@@ -8,7 +8,10 @@
 		"release": "standard-version",
 		"prepare": "husky install",
 		"h:pre-commit": "lint-staged",
-		"dev": "bin/build watch & DEBUG=tcmmap:* nodemon --delay 1 -e pug,js bin/www"
+		"build": "bin/build",
+		"build:watch": "DEBUG=tcmmap:* bin/build watch",
+		"serve:dev": "DEBUG=tcmmap:* nodemon --delay 1 -e pug,js bin/www",
+		"dev": "npm run build:watch & npm run serve:dev"
 	},
 	"lint-staged": {
 		"*": "prettier --ignore-unknown --write",

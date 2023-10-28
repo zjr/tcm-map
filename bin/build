@@ -1,0 +1,61 @@
+#!/usr/bin/env node
+
+const esbuild = require('esbuild');
+const postCssPlugin = require('esbuild-postcss');
+
+const chalk = require('chalk');
+const chokidar = require('chokidar');
+
+const watch = process.argv.indexOf('watch') >= 0;
+
+const entries = ['../src/styles/main.css'];
+const watchPaths = ['src/styles', 'src/views'];
+
+let init = true;
+let building = false;
+
+const builderConfig = {
+	entryPoints: entries,
+	bundle: true,
+	outdir: '../src/public',
+	logLevel: 'info',
+	minify: process.env.NODE_ENV === 'production',
+	sourcemap: process.env.NODE_ENV === 'production' ? false : 'both',
+	plugins: [postCssPlugin()]
+};
+
+function log(msg) {
+	console.log(chalk.dim(msg));
+}
+
+function rebuild(ctx, path) {
+	building = true;
+
+	if (!init) log(`[watch] build started (change: "${path}")`);
+
+	ctx.rebuild().then(() => {
+		const msg = init
+			? '[watch] build finished, watching for changes...'
+			: '[watch] build finished';
+
+		init = false;
+		building = false;
+
+		log(msg);
+	});
+}
+
+async function run() {
+	if (!watch) return await esbuild.build(builderConfig);
+
+	const ctx = await esbuild.context(builderConfig);
+
+	chokidar.watch(watchPaths).on('all', (_, path) => {
+		return building ? null : rebuild(ctx, path);
+	});
+}
+
+run().catch(e => {
+	console.error(e);
+	process.exit(1);
+});

@@ -1,6 +1,7 @@
-import { customElement, property } from 'lit/decorators.js';
-import { TwElement } from '../shared/tailwind.element.js';
 import { html } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+
+import { TwElement } from '../shared/tailwind.element.js';
 
 @customElement('filter-button')
 export default class FilterButton extends TwElement {

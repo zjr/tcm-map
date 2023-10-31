@@ -1,21 +1,34 @@
-import { customElement } from 'lit/decorators.js';
+import { customElement, property } from 'lit/decorators.js';
 import { TwElement } from '../shared/tailwind.element.js';
 import { html } from 'lit';
 
 @customElement('filter-button')
 export default class FilterButton extends TwElement {
+	@property()
+	label: string = 'Label';
+
+	@property()
+	count: number = 0;
+
 	render() {
+		const countDisplay =
+			this.count > 0
+				? html`
+						<span
+							class="ml-1.5 rounded bg-gray-200 px-1.5 py-0.5 text-xs font-semibold tabular-nums text-gray-700"
+							>${this.count}</span
+						>
+				  `
+				: '';
+
 		return html`
 			<button
 				type="button"
 				class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900"
 				aria-expanded="false"
 			>
-				<span>Location</span>
-				<span
-					class="ml-1.5 rounded bg-gray-200 px-1.5 py-0.5 text-xs font-semibold tabular-nums text-gray-700"
-					>1</span
-				>
+				<span>${this.label}</span>
+				${countDisplay}
 				<svg
 					class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
 					viewBox="0 0 20 20"

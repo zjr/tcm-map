@@ -35,7 +35,7 @@ export default class FiltersControls extends TwElement {
 								<div class="flow-root">
 									<div class="-mx-4 flex items-center divide-x divide-gray-200">
 										<div class="relative inline-block px-4 text-left">
-											<filter-button></filter-button>
+											<filter-button label="Location" count="1"></filter-button>
 
 											<!--
 												'Category' dropdown, show/hide based on dropdown state.
@@ -98,25 +98,7 @@ export default class FiltersControls extends TwElement {
 											</div>
 										</div>
 										<div class="relative inline-block px-4 text-left">
-											<button
-												type="button"
-												class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900"
-												aria-expanded="false"
-											>
-												<span>Color</span>
-												<svg
-													class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
-													viewBox="0 0 20 20"
-													fill="currentColor"
-													aria-hidden="true"
-												>
-													<path
-														fill-rule="evenodd"
-														d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-														clip-rule="evenodd"
-													/>
-												</svg>
-											</button>
+											<filter-button label="Industry"></filter-button>
 
 											<!--
 												'Color' dropdown, show/hide based on dropdown state.
@@ -178,25 +160,7 @@ export default class FiltersControls extends TwElement {
 											</div>
 										</div>
 										<div class="relative inline-block px-4 text-left">
-											<button
-												type="button"
-												class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900"
-												aria-expanded="false"
-											>
-												<span>Sizes</span>
-												<svg
-													class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
-													viewBox="0 0 20 20"
-													fill="currentColor"
-													aria-hidden="true"
-												>
-													<path
-														fill-rule="evenodd"
-														d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-														clip-rule="evenodd"
-													/>
-												</svg>
-											</button>
+											<filter-button label="Type"></filter-button>
 
 											<!--
 												'Sizes' dropdown, show/hide based on dropdown state.

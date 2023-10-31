@@ -4,6 +4,7 @@ import { customElement } from 'lit/decorators.js';
 import { TwElement } from './shared/tailwind.element.js';
 
 import './components/tcm-map-search.ts';
+import './components/tcm-map-filters.ts';
 
 /**
  * An example element.
@@ -15,8 +16,9 @@ import './components/tcm-map-search.ts';
 export class TcmMap extends TwElement {
 	render() {
 		return html`
-			<div class="font-sans">
+			<div class="space-x-4 font-sans">
 				<tcm-map-search></tcm-map-search>
+				<tcm-map-filters></tcm-map-filters>
 			</div>
 		`;
 	}

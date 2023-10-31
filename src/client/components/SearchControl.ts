@@ -1,7 +1,7 @@
 import { html } from 'lit';
 import { customElement } from 'lit/decorators.js';
 
-import { TwElement } from '../shared/tailwind.element.js';
+import { TwElement } from '../shared/tailwind.element';
 
 @customElement('search-control')
 export class SearchControl extends TwElement {

@@ -1,5 +1,5 @@
 import { customElement } from 'lit/decorators.js';
-import { TwElement } from '../shared/tailwind.element.js';
+import { TwElement } from '../shared/tailwind.element';
 import { html } from 'lit';
 
 @customElement('sort-control')

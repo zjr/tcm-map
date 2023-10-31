@@ -3,8 +3,8 @@ import { customElement } from 'lit/decorators.js';
 
 import { TwElement } from '../shared/tailwind.element.js';
 
-@customElement('search-controls')
-export class SearchControls extends TwElement {
+@customElement('search-control')
+export class SearchControl extends TwElement {
 	render() {
 		return html`
 			<div>
@@ -45,6 +45,6 @@ export class SearchControls extends TwElement {
 
 declare global {
 	interface HTMLElementTagNameMap {
-		'search-controls': SearchControls;
+		'search-control': SearchControl;
 	}
 }

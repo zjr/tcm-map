@@ -3,7 +3,7 @@ import { customElement } from 'lit/decorators.js';
 
 import { TwElement } from './shared/tailwind.element.js';
 
-import './components/SearchControls.ts';
+import './components/SearchControl.ts';
 import './components/FiltersControls.ts';
 
 /**
@@ -17,7 +17,7 @@ export class TcmMap extends TwElement {
 	render() {
 		return html`
 			<div class="space-x-4 font-sans">
-				<search-controls></search-controls>
+				<search-control></search-control>
 				<filter-controls></filter-controls>
 			</div>
 		`;

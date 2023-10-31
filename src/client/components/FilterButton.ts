@@ -2,8 +2,8 @@ import { customElement } from 'lit/decorators.js';
 import { TwElement } from '../shared/tailwind.element.js';
 import { html } from 'lit';
 
-@customElement('tcm-map-filter-button')
-export default class TcmMapFilterButton extends TwElement {
+@customElement('filter-button')
+export default class FilterButton extends TwElement {
 	render() {
 		return html`
 			<button
@@ -35,6 +35,6 @@ export default class TcmMapFilterButton extends TwElement {
 
 declare global {
 	interface HTMLElementTagNameMap {
-		'tcm-map-filter-button': TcmMapFilterButton;
+		'filter-button': FilterButton;
 	}
 }

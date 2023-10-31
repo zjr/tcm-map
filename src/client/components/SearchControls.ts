@@ -3,8 +3,8 @@ import { customElement } from 'lit/decorators.js';
 
 import { TwElement } from '../shared/tailwind.element.js';
 
-@customElement('tcm-map-search')
-export class TcmMapSearch extends TwElement {
+@customElement('search-controls')
+export class SearchControls extends TwElement {
 	render() {
 		return html`
 			<div>
@@ -45,6 +45,6 @@ export class TcmMapSearch extends TwElement {
 
 declare global {
 	interface HTMLElementTagNameMap {
-		'tcm-map-search': TcmMapSearch;
+		'search-controls': SearchControls;
 	}
 }

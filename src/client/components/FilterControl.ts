@@ -9,16 +9,25 @@ import './FilterDropdown.ts';
 @customElement('filter-control')
 export default class FilterControl extends TwElement {
 	@property()
+	value: string = '';
+
+	@property()
 	label: string = 'Label';
 
 	@property()
 	count: number = 0;
 
+	@property({ type: Boolean })
+	open: boolean = false;
+
 	render() {
 		return html`
 			<div class="relative inline-block px-4 text-left">
 				<filter-button label=${this.label} count=${this.count}></filter-button>
-				<filter-dropdown></filter-dropdown>
+				<filter-dropdown
+					?open=${this.open}
+					optionPath=${this.value}
+				></filter-dropdown>
 			</div>
 		`;
 	}

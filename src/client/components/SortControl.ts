@@ -1,10 +1,50 @@
-import { customElement } from 'lit/decorators.js';
-import { TwElement } from '../shared/tailwind.element';
 import { html } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+
+import { TwElement } from '../shared/tailwind.element';
 
 @customElement('sort-control')
 export default class SortControl extends TwElement {
+	@property()
+	sortOptions: { value: string; label: string; active?: boolean }[] = [
+		{ value: 'name_asc', label: 'A - Z', active: true },
+		{ value: 'name_desc', label: 'Z - A' },
+		{ value: 'memberSince_asc', label: 'Oldest' },
+		{ value: 'memberSince_desc', label: 'Newest' }
+	];
+
+	@state()
+	protected _open = false;
+
 	render() {
+		const optionEls = this.sortOptions.map((opt, idx) => {
+			const optionClasses = [
+				'block px-4 py-2 text-sm  hover:bg-gray-100',
+				opt.active ? 'font-medium text-gray-900' : 'text-gray-500'
+			].join(' ');
+
+			return html`
+				<a
+					href="#sort=${opt.value}"
+					class=${optionClasses}
+					role="menuitem"
+					tabindex="-1"
+					id="menu-item-${idx}"
+					>${opt.label}</a
+				>
+			`;
+		});
+
+		// I am not sure Tailwind was a great fit!
+		const dropdownClasses = [
+			'absolute left-0 z-10 mt-2 w-40 origin-top-left rounded-md',
+			'bg-white shadow-2xl ring-1 ring-black ring-opacity-5',
+			'focus:outline-none',
+			this._open
+				? 'transform scale-100 opacity-100 transition ease-out duration-100'
+				: 'transform scale-95 opacity-0 transition ease-in duration-75'
+		].join(' ');
+
 		return html`
 			<!-- Sorts -->
 			<div class="relative inline-block text-left">
@@ -15,6 +55,7 @@ export default class SortControl extends TwElement {
 						id="menu-button"
 						aria-expanded="false"
 						aria-haspopup="true"
+						@click=${() => (this._open = !this._open)}
 					>
 						Sort
 						<svg
@@ -31,55 +72,14 @@ export default class SortControl extends TwElement {
 						</svg>
 					</button>
 				</div>
-
-				<!--
-					Dropdown menu, show/hide based on menu state.
-
-					Entering: "transition ease-out duration-100"
-						From: "transform opacity-0 scale-95"
-						To: "transform opacity-100 scale-100"
-					Leaving: "transition ease-in duration-75"
-						From: "transform opacity-100 scale-100"
-						To: "transform opacity-0 scale-95"
-				-->
 				<div
-					class="absolute left-0 z-10 mt-2 w-40 origin-top-left rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+					class=${dropdownClasses}
 					role="menu"
 					aria-orientation="vertical"
 					aria-labelledby="menu-button"
 					tabindex="-1"
 				>
-					<div class="py-1" role="none">
-						<!--
-							Active: "bg-gray-100", Not Active: ""
-
-							Selected: "font-medium text-gray-900", Not Selected: "text-gray-500"
-						-->
-						<a
-							href="#"
-							class="block px-4 py-2 text-sm font-medium text-gray-900"
-							role="menuitem"
-							tabindex="-1"
-							id="menu-item-0"
-							>Most Popular</a
-						>
-						<a
-							href="#"
-							class="block px-4 py-2 text-sm text-gray-500"
-							role="menuitem"
-							tabindex="-1"
-							id="menu-item-1"
-							>Best Rating</a
-						>
-						<a
-							href="#"
-							class="block px-4 py-2 text-sm text-gray-500"
-							role="menuitem"
-							tabindex="-1"
-							id="menu-item-2"
-							>Newest</a
-						>
-					</div>
+					<div class="py-1" role="none">${optionEls}</div>
 				</div>
 			</div>
 		`;

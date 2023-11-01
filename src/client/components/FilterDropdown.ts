@@ -25,6 +25,9 @@ export default class FilterButton extends TwElement {
 		}
 	];
 
+	@property({ type: Boolean })
+	open: boolean = false;
+
 	render() {
 		const optionEls = this.options.map(
 			opt => html`
@@ -47,20 +50,16 @@ export default class FilterButton extends TwElement {
 			`
 		);
 
-		return html`
-			<!--
-				'Category' dropdown, show/hide based on dropdown state.
+		const dropdownClasses = [
+			'absolute right-0 z-10 mt-2 origin-top-right rounded-md bg-white p-4',
+			'shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none',
+			this.open
+				? 'transform scale-100 opacity-100 transition ease-out duration-100'
+				: 'transform scale-95 opacity-0 transition ease-in duration-75'
+		].join(' ');
 
-				Entering: "transition ease-out duration-100"
-					From: "transform opacity-0 scale-95"
-					To: "transform opacity-100 scale-100"
-				Leaving: "transition ease-in duration-75"
-					From: "transform opacity-100 scale-100"
-					To: "transform opacity-0 scale-95"
-			-->
-			<div
-				class="absolute right-0 z-10 mt-2 origin-top-right rounded-md bg-white p-4 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
-			>
+		return html`
+			<div class=${dropdownClasses}>
 				<form class="space-y-4">${optionEls}</form>
 			</div>
 		`;

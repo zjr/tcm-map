@@ -66,7 +66,7 @@ const results = [
 export class TcmMap extends TwElement {
 	render() {
 		return html`
-			<div class="space-x-4 font-sans">
+			<div class="space-x-4 bg-white font-sans">
 				<search-control></search-control>
 				<filter-controls></filter-controls>
 				<div class="mx-4 divide-y divide-gray-100 border-b border-b-gray-100">

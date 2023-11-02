@@ -1,10 +1,12 @@
-import { html } from 'lit';
+import { html, LitElement } from 'lit';
 import { customElement } from 'lit/decorators.js';
 
-import { TwElement } from '../shared/tailwind.element';
-
 @customElement('search-control')
-export class SearchControl extends TwElement {
+export class SearchControl extends LitElement {
+	protected createRenderRoot(): HTMLElement | DocumentFragment {
+		return this;
+	}
+
 	render() {
 		return html`
 			<div>
@@ -13,12 +15,12 @@ export class SearchControl extends TwElement {
 					class="block text-sm font-medium leading-6 text-gray-900"
 					>Search members by name</label
 				>
-				<div class="relative mt-2 rounded-md shadow-sm">
+				<div class="relative mt-2 max-w-xs shadow-sm">
 					<input
 						type="text"
 						name="member-search"
 						id="member-search"
-						class="block w-full rounded-md border-0 py-1.5 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+						class="block w-full border-0 py-1.5 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
 						placeholder="Susan Appleseed"
 					/>
 					<div

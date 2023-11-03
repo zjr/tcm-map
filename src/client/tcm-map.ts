@@ -66,10 +66,12 @@ const results = [
 export class TcmMap extends TwElement {
 	render() {
 		return html`
-			<div class="space-x-4 bg-white font-sans">
+			<div class="space-y-4 bg-white font-sans">
 				<search-control></search-control>
 				<filter-controls></filter-controls>
-				<div class="mx-4 divide-y divide-gray-100 border-b border-b-gray-100">
+				<div
+					class="mx-4 divide-y divide-gray-100 border-b border-b-gray-100 sm:mx-6 lg:mx-8"
+				>
 					${results.map(member => {
 						const memberLink = member.url
 							? [

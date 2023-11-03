@@ -1,4 +1,4 @@
-import { html } from 'lit';
+import { css, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
 import { TwElement } from '../shared/tailwind.element';
@@ -37,6 +37,15 @@ export default class FiltersControls extends TwElement {
 		this.openDropdown = this.openDropdown === value ? '' : value;
 	}
 
+	static styles = [
+		super.styles,
+		css`
+			:host {
+				display: block;
+			}
+		`
+	];
+
 	render() {
 		// Mobile filter dialog toggle, controls the 'mobileFiltersOpen' state.
 		const mobileFilterDialogToggle = html`
@@ -53,9 +62,7 @@ export default class FiltersControls extends TwElement {
 			<section aria-labelledby="filter-heading">
 				<h2 id="filter-heading" class="sr-only">Filters</h2>
 				<div class="border-b border-gray-200 bg-white pb-4">
-					<div
-						class="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8"
-					>
+					<div class="mx-auto flex justify-between px-4 sm:px-6 lg:px-8">
 						<sort-control open="true"></sort-control>
 						${mobileFilterDialogToggle}
 						<div class="hidden sm:block">

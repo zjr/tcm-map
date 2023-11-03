@@ -9,7 +9,7 @@ export class SearchControl extends LitElement {
 
 	render() {
 		return html`
-			<div>
+			<div class="px-4 pt-4 sm:px-6 lg:px-8">
 				<label
 					for="member-search"
 					class="block text-sm font-medium leading-6 text-gray-900"

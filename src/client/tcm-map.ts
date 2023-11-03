@@ -4,7 +4,7 @@ import { customElement } from 'lit/decorators.js';
 import { TwElement } from './shared/tailwind.element';
 
 import './components/SearchControl.ts';
-import './components/FiltersControls.ts';
+import './components/FilterControls.ts';
 import './components/TypePill.ts';
 
 const secondsInAYear = 3.154e7;

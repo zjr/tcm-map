@@ -8,10 +8,8 @@ import './ActiveFilters.ts';
 import './FilterControl.ts';
 import './FilterDialogMobile.ts';
 
-import FilterControl from './FilterControl';
-
 @customElement('filter-controls')
-export default class FiltersControls extends TwElement {
+export default class FilterControls extends TwElement {
 	@property()
 	filterOptions = [
 		{
@@ -32,8 +30,8 @@ export default class FiltersControls extends TwElement {
 	@property({ type: String })
 	openDropdown: string = '';
 
-	private _handleDropdownClick(e: Event) {
-		const { value } = e.target as FilterControl;
+	private _handleDropdownClick(e: CustomEvent) {
+		const value = e.detail.value;
 		this.openDropdown = this.openDropdown === value ? '' : value;
 	}
 
@@ -67,13 +65,11 @@ export default class FiltersControls extends TwElement {
 						${mobileFilterDialogToggle}
 						<div class="hidden sm:block">
 							<div class="flow-root">
-								<div
-									@click=${this._handleDropdownClick}
-									class="-mx-4 flex items-center divide-x divide-gray-200"
-								>
+								<div class="-mx-4 flex items-center divide-x divide-gray-200">
 									${this.filterOptions.map(
 										option => html`
 											<filter-control
+												@open-dropdown=${this._handleDropdownClick}
 												label=${option.label}
 												count=${option.count}
 												value=${option.value}
@@ -94,6 +90,6 @@ export default class FiltersControls extends TwElement {
 
 declare global {
 	interface HTMLElementTagNameMap {
-		'filter-controls': FiltersControls;
+		'filter-controls': FilterControls;
 	}
 }

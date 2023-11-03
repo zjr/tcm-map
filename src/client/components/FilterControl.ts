@@ -23,7 +23,16 @@ export default class FilterControl extends TwElement {
 	render() {
 		return html`
 			<div class="relative inline-block px-4 text-left">
-				<filter-button label=${this.label} count=${this.count}></filter-button>
+				<filter-button
+					@click=${() =>
+						this.dispatchEvent(
+							new CustomEvent('open-dropdown', {
+								detail: { value: this.value }
+							})
+						)}
+					label=${this.label}
+					count=${this.count}
+				></filter-button>
 				<filter-dropdown
 					?open=${this.open}
 					optionPath=${this.value}

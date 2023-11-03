@@ -33,7 +33,7 @@ export default class FilterButton extends TwElement {
 			opt => html`
 				<div class="flex items-center">
 					<input
-						id="filter-category-0"
+						id=${opt.value}
 						name=${this.optionPath}
 						value=${opt.value}
 						type="checkbox"
@@ -41,7 +41,7 @@ export default class FilterButton extends TwElement {
 						class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
 					/>
 					<label
-						for="filter-category-0"
+						for=${opt.value}
 						class="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900"
 					>
 						${opt.label}
@@ -55,7 +55,7 @@ export default class FilterButton extends TwElement {
 			'shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none',
 			this.open
 				? 'transform scale-100 opacity-100 transition ease-out duration-100'
-				: 'transform scale-95 opacity-0 transition ease-in duration-75'
+				: 'transform scale-95 opacity-0 transition ease-in duration-75 pointer-events-none'
 		].join(' ');
 
 		return html`

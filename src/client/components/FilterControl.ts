@@ -2,6 +2,7 @@ import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
 import { TwElement } from '../shared/tailwind.element';
+import { IFilter } from './FilterControls';
 
 import './FilterButton.ts';
 import './FilterDropdown.ts';
@@ -9,13 +10,7 @@ import './FilterDropdown.ts';
 @customElement('filter-control')
 export default class FilterControl extends TwElement {
 	@property()
-	value: string = '';
-
-	@property()
-	label: string = 'Label';
-
-	@property()
-	count: number = 0;
+	filter: IFilter = { value: '', label: '' };
 
 	@property({ type: Boolean })
 	open: boolean = false;
@@ -27,16 +22,14 @@ export default class FilterControl extends TwElement {
 					@click=${() =>
 						this.dispatchEvent(
 							new CustomEvent('open-dropdown', {
-								detail: { value: this.value }
+								detail: { value: this.filter.value }
 							})
 						)}
-					label=${this.label}
-					count=${this.count}
+					label=${this.filter.label}
+					count=${this.filter.count}
 				></filter-button>
-				<filter-dropdown
-					?open=${this.open}
-					optionPath=${this.value}
-				></filter-dropdown>
+				<filter-dropdown ?open=${this.open} .filter=${this.filter}>
+				</filter-dropdown>
 			</div>
 		`;
 	}

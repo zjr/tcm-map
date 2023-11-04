@@ -1,4 +1,4 @@
-import { css, html } from 'lit';
+import { css, html, TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
 import { TwElement } from '../shared/tailwind.element';
@@ -8,22 +8,53 @@ import './ActiveFilters.ts';
 import './FilterControl.ts';
 import './FilterDialogMobile.ts';
 
+export interface IFilterOption {
+	value: string;
+	label: string;
+	checked?: boolean;
+}
+
+export interface IFilter {
+	value: string;
+	label: string;
+	count?: number;
+	options?: IFilterOption[];
+	children?: TemplateResult;
+}
+
 @customElement('filter-controls')
 export default class FilterControls extends TwElement {
 	@property()
-	filterOptions = [
+	filters: IFilter[] = [
 		{
-			value: 'location',
+			value: 'location[]',
 			label: 'Location',
-			count: 1
+			count: 1,
+			children: html``
 		},
 		{
-			value: 'industry',
-			label: 'Industry'
+			value: 'industry[]',
+			label: 'Industry',
+			options: [
+				{
+					value: 'health',
+					label: 'Health'
+				},
+				{
+					value: 'education',
+					label: 'Education',
+					checked: true
+				},
+				{
+					value: 'info',
+					label: 'Info/Communication'
+				}
+			]
 		},
 		{
 			value: 'type',
-			label: 'Type'
+			label: 'Type',
+			options: []
 		}
 	];
 
@@ -66,15 +97,14 @@ export default class FilterControls extends TwElement {
 						<div class="hidden sm:block">
 							<div class="flow-root">
 								<div class="-mx-4 flex items-center divide-x divide-gray-200">
-									${this.filterOptions.map(
-										option => html`
+									${this.filters.map(
+										filter => html`
 											<filter-control
 												@open-dropdown=${this._handleDropdownClick}
-												label=${option.label}
-												count=${option.count}
-												value=${option.value}
-												?open=${this.openDropdown === option.value}
-											></filter-control>
+												?open=${this.openDropdown === filter.value}
+												.filter=${filter}
+											>
+											</filter-control>
 										`
 									)}
 								</div>

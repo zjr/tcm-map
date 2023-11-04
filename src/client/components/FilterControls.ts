@@ -10,7 +10,7 @@ import './FilterDialogMobile.ts';
 
 export interface IFilterOption {
 	value: string;
-	label: string;
+	label?: string;
 	checked?: boolean;
 }
 
@@ -36,19 +36,19 @@ export default class FilterControls extends TwElement {
 			value: 'industry[]',
 			label: 'Industry',
 			options: [
-				{
-					value: 'health',
-					label: 'Health'
-				},
+				{ value: 'arts' },
 				{
 					value: 'education',
-					label: 'Education',
 					checked: true
 				},
-				{
-					value: 'info',
-					label: 'Info/Communication'
-				}
+				{ value: 'environment' },
+				{ value: 'health' },
+				{ value: 'human rights' },
+				{ value: 'human services' },
+				{ value: 'info/communications' },
+				{ value: 'public affairs' },
+				{ value: 'public safety' },
+				{ value: 'sports' }
 			]
 		},
 		{

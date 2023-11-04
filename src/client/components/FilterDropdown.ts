@@ -21,13 +21,13 @@ export default class FilterButton extends TwElement {
 					value=${opt.value}
 					type="checkbox"
 					?checked=${opt.checked}
-					class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+					class="h-4 w-4 cursor-pointer rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
 				/>
 				<label
 					for=${opt.value}
-					class="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900"
+					class="ml-3 cursor-pointer whitespace-nowrap pr-6 text-sm font-medium capitalize text-gray-900"
 				>
-					${opt.label}
+					${opt.label || opt.value}
 				</label>
 			</div>
 		`;

@@ -12,7 +12,7 @@ export class SearchControl extends LitElement {
 			<div class="px-4 pt-4 sm:px-6 lg:px-8">
 				<label
 					for="member-search"
-					class="block text-sm font-medium leading-6 text-gray-900"
+					class="block max-w-xs text-sm font-medium leading-6 text-gray-900"
 					>Search members by name</label
 				>
 				<div class="relative mt-2 max-w-xs shadow-sm">

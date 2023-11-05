@@ -1,7 +1,5 @@
-import { css, html, TemplateResult } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
-
-import { TwElement } from '../shared/tailwind.element';
+import { html, LitElement, TemplateResult } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
 
 import './SortControl.ts';
 import './ActiveFilters.ts';
@@ -23,7 +21,7 @@ export interface IFilter {
 }
 
 @customElement('filter-controls')
-export default class FilterControls extends TwElement {
+export default class FilterControls extends LitElement {
 	@property()
 	filters: IFilter[] = [
 		{
@@ -58,22 +56,34 @@ export default class FilterControls extends TwElement {
 		}
 	];
 
-	@property({ type: String })
-	openDropdown: string = '';
+	@state()
+	private _openDropdown: string = '';
 
 	private _handleDropdownClick(e: CustomEvent) {
 		const value = e.detail.value;
-		this.openDropdown = this.openDropdown === value ? '' : value;
+		this._openDropdown = this._openDropdown === value ? '' : value;
 	}
 
-	static styles = [
-		super.styles,
-		css`
-			:host {
-				display: block;
-			}
-		`
-	];
+	private _closeDropdown(e: Event) {
+		if (
+			e.target instanceof HTMLElement &&
+			!e.target.closest('filter-control')
+		) {
+			this._openDropdown = '';
+		}
+	}
+
+	closeDropdown = this._closeDropdown.bind(this);
+
+	connectedCallback() {
+		super.connectedCallback();
+		this.parentElement?.addEventListener('click', this.closeDropdown);
+	}
+
+	disconnectedCallback() {
+		this.parentElement?.removeEventListener('click', this.closeDropdown);
+		super.disconnectedCallback();
+	}
 
 	render() {
 		// Mobile filter dialog toggle, controls the 'mobileFiltersOpen' state.
@@ -101,7 +111,7 @@ export default class FilterControls extends TwElement {
 										filter => html`
 											<filter-control
 												@open-dropdown=${this._handleDropdownClick}
-												?open=${this.openDropdown === filter.value}
+												?open=${this._openDropdown === filter.value}
 												.filter=${filter}
 											>
 											</filter-control>
@@ -115,6 +125,10 @@ export default class FilterControls extends TwElement {
 				<active-filters></active-filters>
 			</section>
 		`;
+	}
+
+	protected createRenderRoot(): HTMLElement | DocumentFragment {
+		return this;
 	}
 }
 

@@ -68,7 +68,7 @@ export class TcmMap extends TwElement {
 		return html`
 			<div class="space-y-4 bg-white font-sans">
 				<search-control></search-control>
-				<filter-controls></filter-controls>
+				<filter-controls class="block"></filter-controls>
 				<div
 					class="mx-4 divide-y divide-gray-100 border-b border-b-gray-100 sm:mx-6 lg:mx-8"
 				>

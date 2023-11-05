@@ -1,10 +1,8 @@
-import { html } from 'lit';
+import { html, LitElement } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 
-import { TwElement } from '../shared/tailwind.element';
-
 @customElement('sort-control')
-export default class SortControl extends TwElement {
+export default class SortControl extends LitElement {
 	@property()
 	sortOptions: { value: string; label: string; active?: boolean }[] = [
 		{ value: 'name_asc', label: 'A - Z', active: true },
@@ -15,6 +13,27 @@ export default class SortControl extends TwElement {
 
 	@state()
 	protected _open = false;
+
+	private _close(e: Event) {
+		if (e.target instanceof HTMLElement && !e.target.closest('sort-control')) {
+			this._open = false;
+		}
+	}
+
+	close = this._close.bind(this);
+
+	protected root: Element | null = null;
+
+	connectedCallback() {
+		super.connectedCallback();
+		this.root = this.closest('#root');
+		this.root?.addEventListener('click', this.close);
+	}
+
+	disconnectedCallback() {
+		super.disconnectedCallback();
+		this.root?.removeEventListener('click', this.close);
+	}
 
 	render() {
 		const optionEls = this.sortOptions.map((opt, idx) => {
@@ -37,16 +56,15 @@ export default class SortControl extends TwElement {
 
 		// I am not sure Tailwind was a great fit!
 		const dropdownClasses = [
-			'absolute left-0 z-10 mt-2 w-40 origin-top-left rounded-md',
+			'absolute left-0 z-10 mt-2 w-40 origin-top-left',
 			'bg-white shadow-2xl ring-1 ring-black ring-opacity-5',
 			'focus:outline-none',
 			this._open
 				? 'transform scale-100 opacity-100 transition ease-out duration-100'
-				: 'transform scale-95 opacity-0 transition ease-in duration-75'
+				: 'transform scale-95 opacity-0 transition ease-in duration-75 pointer-events-none'
 		].join(' ');
 
 		return html`
-			<!-- Sorts -->
 			<div class="relative inline-block text-left">
 				<div>
 					<button
@@ -83,6 +101,10 @@ export default class SortControl extends TwElement {
 				</div>
 			</div>
 		`;
+	}
+
+	protected createRenderRoot(): HTMLElement | DocumentFragment {
+		return this;
 	}
 }
 

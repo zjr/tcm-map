@@ -9,21 +9,21 @@ import './components/TypePill.ts';
 
 /**
  * TODO:
- * - [] style the sort dropdown
- * - [] add auto-close to sort dropdown
- * - [] add state to the active filter bar
- * - [] add a 'no filters' state the filter bar
- * - [] drop the photos, at least for v1
- * - [] email Nima/TCM about "type"
- * - [] add the google map
- * - [] style the google map's place pins
- * - [] connect to salesforce api
- * - [] get lists
- * - [] filter lists
- * - [] search lists
- * - [] add caching
- * - [] affect map by filtering / searching
- * - [] prep for deployment
+ * - [x] style the sort dropdown
+ * - [x] add auto-close to sort dropdown
+ * - [ ] add state to the active filter bar
+ * - [ ] add a 'no filters' state the filter bar
+ * - [ ] drop the photos, at least for v1
+ * - [ ] email Nima/TCM about "type"
+ * - [ ] add the google map
+ * - [ ] style the google map's place pins
+ * - [ ] connect to salesforce api
+ * - [ ] get lists
+ * - [ ] filter lists
+ * - [ ] search lists
+ * - [ ] add caching
+ * - [ ] affect map by filtering / searching
+ * - [ ] prep for deployment
  */
 
 const secondsInAYear = 3.154e7;
@@ -85,7 +85,7 @@ const results = [
 export class TcmMap extends TwElement {
 	render() {
 		return html`
-			<div class="space-y-4 bg-white font-sans">
+			<div id="root" class="space-y-4 bg-white font-sans">
 				<search-control></search-control>
 				<filter-controls class="block"></filter-controls>
 				<div

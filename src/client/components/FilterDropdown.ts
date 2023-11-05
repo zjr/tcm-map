@@ -21,7 +21,7 @@ export default class FilterButton extends TwElement {
 					value=${opt.value}
 					type="checkbox"
 					?checked=${opt.checked}
-					class="h-4 w-4 cursor-pointer rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+					class="h-4 w-4 cursor-pointer rounded border-gray-300 text-tcmOrange-500 focus:ring-tcmOrange-500"
 				/>
 				<label
 					for=${opt.value}
@@ -35,7 +35,7 @@ export default class FilterButton extends TwElement {
 
 	render() {
 		const dropdownClasses = [
-			'absolute right-0 z-10 mt-2 origin-top-right rounded-md bg-white p-4',
+			'absolute right-0 z-10 mt-2 origin-top-right bg-gray-50 p-4',
 			'shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none',
 			this.open
 				? 'transform scale-100 opacity-100 transition ease-out duration-100'
@@ -45,6 +45,7 @@ export default class FilterButton extends TwElement {
 		return html`
 			<div class=${dropdownClasses}>
 				<form class="space-y-4">
+					${this.filter.children}
 					${this.filter.options?.map(this.renderFilterOptions.bind(this))}
 				</form>
 			</div>

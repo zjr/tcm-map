@@ -20,17 +20,17 @@ export class SearchControl extends LitElement {
 						type="text"
 						name="member-search"
 						id="member-search"
-						class="block w-full border-0 py-1.5 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+						class="peer block w-full border-0 py-1.5 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-tcmOrange-500 sm:text-sm sm:leading-6"
 						placeholder="Susan Appleseed"
 					/>
 					<div
-						class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3"
+						class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 peer-focus:text-gray-600"
 					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 20 20"
 							fill="currentColor"
-							class="h-5 w-5 text-gray-400"
+							class="h-5 w-5"
 						>
 							<path
 								fill-rule="evenodd"

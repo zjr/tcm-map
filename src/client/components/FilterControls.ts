@@ -59,7 +59,7 @@ export default class FilterControls extends LitElement {
 						<input
 							id="combobox"
 							type="text"
-							class="w-full border-0 bg-white py-3 pl-3 pr-12 text-sm text-gray-900 placeholder-gray-400 shadow-sm ring-1 ring-inset ring-black ring-opacity-10 focus:ring-2 focus:ring-inset focus:ring-tcmOrange-500 sm:text-sm sm:leading-6"
+							class="w-full border-0 bg-white py-3 pl-3 pr-12 text-sm text-gray-900 placeholder-gray-400 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-tcmOrange-500 sm:text-sm sm:leading-6"
 							role="combobox"
 							aria-controls="options"
 							aria-expanded="true"

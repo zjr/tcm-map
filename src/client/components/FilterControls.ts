@@ -10,6 +10,7 @@ export interface IFilterOption {
 	value: string;
 	label?: string;
 	checked?: boolean;
+	filterName?: string; // the filter option's parent name
 }
 
 export interface IFilter {
@@ -167,6 +168,20 @@ export default class FilterControls extends LitElement {
 		}
 	];
 
+	private _handleClearFilter(e: CustomEvent) {
+		const newFilters = [...this.filters];
+
+		const filter = newFilters.find(f => f.value === e.detail.name);
+		const option = filter?.options?.find(opt => opt.value === e.detail.value);
+
+		if (!option) return;
+
+		option.checked = false;
+		this.filters = newFilters;
+	}
+
+	handleClearFilter = this._handleClearFilter.bind(this);
+
 	@state()
 	private _openDropdown: string = '';
 
@@ -233,7 +248,10 @@ export default class FilterControls extends LitElement {
 						</div>
 					</div>
 				</div>
-				<active-filters></active-filters>
+				<active-filters
+					.filters=${this.filters}
+					@clear-filter=${this.handleClearFilter}
+				></active-filters>
 			</section>
 		`;
 	}

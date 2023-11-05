@@ -12,10 +12,14 @@ export default class SortControl extends LitElement {
 	];
 
 	@state()
-	protected _open = false;
+	protected _open: boolean | null = null;
 
 	private _close(e: Event) {
-		if (e.target instanceof HTMLElement && !e.target.closest('sort-control')) {
+		if (
+			this._open !== null &&
+			e.target instanceof HTMLElement &&
+			!e.target.closest('sort-control')
+		) {
 			this._open = false;
 		}
 	}
@@ -58,10 +62,8 @@ export default class SortControl extends LitElement {
 		const dropdownClasses = [
 			'absolute left-0 z-10 mt-2 w-40 origin-top-left',
 			'bg-white shadow-2xl ring-1 ring-black ring-opacity-5',
-			'focus:outline-none',
-			this._open
-				? 'transform scale-100 opacity-100 transition ease-out duration-100'
-				: 'transform scale-95 opacity-0 transition ease-in duration-75 pointer-events-none'
+			'focus:outline-none opacity-0 scale-0',
+			this._open === null ? '' : this._open ? 'animate-pop' : 'animate-hide'
 		].join(' ');
 
 		return html`

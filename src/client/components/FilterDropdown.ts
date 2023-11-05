@@ -10,7 +10,7 @@ export default class FilterButton extends TwElement {
 	filter: IFilter = { value: '', label: '' };
 
 	@property({ type: Boolean })
-	open: boolean = false;
+	open: boolean | null = null;
 
 	private renderFilterOptions(opt: IFilterOption) {
 		return html`
@@ -35,11 +35,9 @@ export default class FilterButton extends TwElement {
 
 	render() {
 		const dropdownClasses = [
-			'absolute right-0 z-10 mt-2 origin-top-right bg-gray-50 p-4',
+			'absolute right-0 z-10 mt-2 origin-top-right bg-gray-50 p-4 scale-0 opacity-0',
 			'shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none',
-			this.open
-				? 'transform scale-100 opacity-100 transition ease-out duration-100'
-				: 'transform scale-95 opacity-0 transition ease-in duration-75 pointer-events-none'
+			this.open === null ? '' : this.open ? 'animate-pop' : 'animate-hide'
 		].join(' ');
 
 		return html`

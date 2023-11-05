@@ -168,7 +168,7 @@ export default class FilterControls extends LitElement {
 	];
 
 	@state()
-	private _openDropdown: string = 'location[]';
+	private _openDropdown: string = '';
 
 	private _handleDropdownClick(e: CustomEvent) {
 		const value = e.detail.value;

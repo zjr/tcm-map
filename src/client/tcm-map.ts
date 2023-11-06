@@ -11,9 +11,9 @@ import './components/TypePill.ts';
  * TODO:
  * - [x] style the sort dropdown
  * - [x] add auto-close to sort dropdown
- * - [ ] add state to the active filter bar
- * - [ ] add a 'no filters' state the filter bar
- * - [ ] drop the photos, at least for v1
+ * - [x] add state to the active filter bar
+ * - [x] add a 'no filters' state the filter bar
+ * - [x] drop the photos, at least for v1
  * - [ ] email Nima/TCM about "type"
  * - [ ] add the google map
  * - [ ] style the google map's place pins
@@ -106,11 +106,7 @@ export class TcmMap extends TwElement {
 						return html`
 							<div class="flex justify-between space-x-4 py-5">
 								<div class="flex space-x-4">
-									<img
-										src="https://placehold.co/200"
-										alt="placeholder"
-										class="h-14 w-14 rounded-full"
-									/>
+									<!--<img src="" alt="" class="h-14 w-14 rounded-full" />-->
 									<div class="space-y-1.5">
 										<p class="text-lg font-bold text-gray-800">
 											${member.name}

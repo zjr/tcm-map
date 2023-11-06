@@ -1,5 +1,7 @@
-import { html } from 'lit';
+import { html, PropertyValues } from 'lit';
+import { ref, Ref, createRef } from 'lit/directives/ref.js';
 import { customElement } from 'lit/decorators.js';
+import { Loader } from '@googlemaps/js-api-loader';
 
 import { TwElement } from './shared/tailwind.element';
 
@@ -14,8 +16,8 @@ import './components/TypePill.ts';
  * - [x] add state to the active filter bar
  * - [x] add a 'no filters' state the filter bar
  * - [x] drop the photos, at least for v1
- * - [ ] email Nima/TCM about "type"
- * - [ ] add the google map
+ * - [x] email Nima/TCM about "type"
+ * - [x] add the google map
  * - [ ] style the google map's place pins
  * - [ ] connect to salesforce api
  * - [ ] get lists
@@ -83,52 +85,79 @@ const results = [
  */
 @customElement('tcm-map')
 export class TcmMap extends TwElement {
+	mapRef: Ref<HTMLDivElement> = createRef();
+
+	protected firstUpdated(_changedProperties: PropertyValues) {
+		super.firstUpdated(_changedProperties);
+
+		const loader = new Loader({
+			apiKey: 'AIzaSyBsSN0chGU2krx7HNvJTh6g0v3502TsByo',
+			version: 'weekly'
+		});
+
+		loader.load().then(async () => {
+			const { Map } = (await google.maps.importLibrary(
+				'maps'
+			)) as google.maps.MapsLibrary;
+
+			new Map(this.mapRef.value!, {
+				center: { lat: 37.775, lng: -122.419 },
+				zoom: 10
+			});
+		});
+	}
+
 	render() {
 		return html`
-			<div id="root" class="space-y-4 bg-white font-sans">
-				<search-control></search-control>
-				<filter-controls class="block"></filter-controls>
-				<div
-					class="mx-4 divide-y divide-gray-100 border-b border-b-gray-100 sm:mx-6 lg:mx-8"
-				>
-					${results.map(member => {
-						const memberLink = member.url
-							? [
-									' • ',
-									html`<a
-										href=${member.url}
-										class="text-tcmYellow-900 underline"
-										>Visit Website</a
-									>`
-							  ]
-							: null;
+			<div id="root" class="flex flex-row">
+				<div class="space-y-4 bg-white font-sans">
+					<search-control></search-control>
+					<filter-controls class="block"></filter-controls>
+					<div
+						class="mx-4 divide-y divide-gray-100 border-b border-b-gray-100 sm:mx-6 lg:mx-8"
+					>
+						${results.map(member => {
+							const memberLink = member.url
+								? [
+										' • ',
+										html`<a
+											href=${member.url}
+											class="text-tcmYellow-900 underline"
+											>Visit Website</a
+										>`
+								  ]
+								: null;
 
-						return html`
-							<div class="flex justify-between space-x-4 py-5">
-								<div class="flex space-x-4">
-									<!--<img src="" alt="" class="h-14 w-14 rounded-full" />-->
-									<div class="space-y-1.5">
-										<p class="text-lg font-bold text-gray-800">
-											${member.name}
+							return html`
+								<div class="flex justify-between space-x-4 py-5">
+									<div class="flex space-x-4">
+										<!--<img src="" alt="" class="h-14 w-14 rounded-full" />-->
+										<div class="space-y-1.5">
+											<p class="text-lg font-bold text-gray-800">
+												${member.name}
+											</p>
+											<p class="text-gray-500">
+												<span
+													>Member since
+													${new Date(
+														member.startDate * 1000
+													).getFullYear()}</span
+												>${memberLink}
+											</p>
+										</div>
+									</div>
+									<div class="space-y-2 pt-[5px] text-right">
+										<p class="text-gray-600">
+											${member.billingCity}, ${member.billingState}
 										</p>
-										<p class="text-gray-500">
-											<span
-												>Member since
-												${new Date(member.startDate * 1000).getFullYear()}</span
-											>${memberLink}
-										</p>
+										<type-pill .member=${member}></type-pill>
 									</div>
 								</div>
-								<div class="space-y-2 pt-[5px] text-right">
-									<p class="text-gray-600">
-										${member.billingCity}, ${member.billingState}
-									</p>
-									<type-pill .member=${member}></type-pill>
-								</div>
-							</div>
-						`;
-					})}
+							`;
+						})}
+					</div>
 				</div>
+				<div class="flex-grow" id="map" ${ref(this.mapRef)}></div>
 			</div>
 		`;
 	}

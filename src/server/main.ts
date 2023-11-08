@@ -1,21 +1,30 @@
-import express from 'express';
-import ViteExpress from 'vite-express';
+import 'dotenv/config';
 
+import express, { NextFunction, Request, Response } from 'express';
+import ViteExpress from 'vite-express';
 import cors from 'cors';
-import * as url from 'url';
+
+import sfClient from './salesforce/SFClient';
 
 const app = express();
 app.use(cors());
 
-function getOrigin(req: express.Request) {
-	return url.format({ protocol: req.protocol, host: req.get('host') });
+function asyncHandler(
+	cb: (req: Request, res: Response, next: NextFunction) => Promise<void>
+) {
+	return function (req: Request, res: Response, next: NextFunction) {
+		return Promise.resolve(cb(req, res, next)).catch(next);
+	};
 }
 
-app.get('/load', (req, res) => {
-	const origin = getOrigin(req);
-	console.log(`hi from ${origin}`);
-	res.render('index', { origin });
-});
+app.get(
+	'/accounts',
+	asyncHandler(async (_, res) => {
+		res.json(await sfClient.getTcmMembersFull());
+	})
+);
+
+// app.get('/locations', asyncHandler())
 
 ViteExpress.listen(app, 3000, () =>
 	console.log('Server is listening on port 3000...')

@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+.salesforce.schema.gql
+
+.env*
+.flaskenv*
+!.env.project
+!.env.vault

@@ -1,7 +1,9 @@
 import { html, PropertyValues } from 'lit';
 import { ref, Ref, createRef } from 'lit/directives/ref.js';
 import { customElement } from 'lit/decorators.js';
+
 import { Loader } from '@googlemaps/js-api-loader';
+import { MarkerClusterer } from '@googlemaps/markerclusterer';
 
 import { TwElement } from './shared/tailwind.element';
 
@@ -87,7 +89,7 @@ const results = [
 export class TcmMap extends TwElement {
 	mapRef: Ref<HTMLDivElement> = createRef();
 
-	protected firstUpdated(_changedProperties: PropertyValues) {
+	protected async firstUpdated(_changedProperties: PropertyValues) {
 		super.firstUpdated(_changedProperties);
 
 		const loader = new Loader({
@@ -95,16 +97,53 @@ export class TcmMap extends TwElement {
 			version: 'weekly'
 		});
 
-		loader.load().then(async () => {
-			const { Map } = (await google.maps.importLibrary(
-				'maps'
-			)) as google.maps.MapsLibrary;
+		await loader.load();
+		const { Map, InfoWindow } = (await google.maps.importLibrary(
+			'maps'
+		)) as google.maps.MapsLibrary;
+		const { AdvancedMarkerElement, PinElement } =
+			(await google.maps.importLibrary('marker')) as google.maps.MarkerLibrary;
 
-			new Map(this.mapRef.value!, {
-				center: { lat: 37.775, lng: -122.419 },
-				zoom: 10
-			});
+		const map = new Map(this.mapRef.value!, {
+			center: { lat: 37.775, lng: -122.419 },
+			zoom: 10,
+			mapId: 'tcm-map'
 		});
+
+		const res = await fetch('http://localhost:3000/accounts');
+		const data = (await res.json()) as [string, string, number, number][];
+		const points = data.map(x => ({ lat: x[2], lng: x[3] }));
+
+		const infoWindow = new InfoWindow({
+			content: '',
+			disableAutoPan: true
+		});
+
+		// Create an array of alphabetical characters used to label the markers.
+		const labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		// Add some markers to the map.
+		const markers = points.map((position, i) => {
+			const label = labels[i % labels.length];
+			const pinGlyph = new PinElement({
+				glyph: label,
+				glyphColor: 'white'
+			});
+			const marker = new AdvancedMarkerElement({
+				position,
+				content: pinGlyph.element
+			});
+
+			// markers can only be keyboard focusable when they have click listeners
+			// open info window when marker is clicked
+			marker.addListener('click', () => {
+				infoWindow.setContent(position.lat + ', ' + position.lng);
+				infoWindow.open(map, marker);
+			});
+			return marker;
+		});
+
+		// Add a marker clusterer to manage the markers.
+		new MarkerClusterer({ markers, map });
 	}
 
 	render() {

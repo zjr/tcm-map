@@ -151,7 +151,9 @@ export class SFClient {
 				 FROM
 					 Account
 				 WHERE
-					 TCM_Member__c = true
+					 TCM_Member__c = true and
+				 	 BillingLatitude <> null and
+				 	 BillingLongitude <> null
 			`
 		);
 

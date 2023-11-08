@@ -1,5 +1,3 @@
-// import { gql, GraphQLClient } from 'graphql-request';
-
 interface SFApiError {
 	error: string;
 	error_description: string;
@@ -30,37 +28,11 @@ interface SFApiOAuthResponse extends SFApiResponse {
 	issued_at: string;
 }
 
-// interface AccountEdge {
-// 	node: {
-// 		Id: string;
-// 		Name: { value: string };
-// 		BillingLatitude: { value: number };
-// 		BillingLongitude: { value: number };
-// 	};
-// }
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-// interface Data {
-// 	uiapi: {
-// 		query: {
-// 			Account: {
-// 				edges: Array<AccountEdge>;
-// 				totalCount: number;
-// 				pageInfo: {
-// 					hasNextPage: boolean;
-// 					endCursor: never;
-// 				};
-// 			};
-// 		};
-// 	};
-// }
-
 export class SFClient {
 	host: string;
 	token: string;
 
 	restEndpoint: string;
-	// graphEndpoint: string;
 
 	authorized: Promise<void>;
 
@@ -69,14 +41,9 @@ export class SFClient {
 		this.token = '';
 
 		this.restEndpoint = '/services/data/v59.0';
-		// this.graphEndpoint = '/services/data/v59.0/graphql';
 
 		this.authorized = this.authorize();
 	}
-
-	// get graphUrl() {
-	// 	return new URL(this.graphEndpoint, this.host);
-	// }
 
 	getUrl(pathname: string) {
 		return new URL(pathname, this.host);
@@ -126,63 +93,6 @@ export class SFClient {
 
 		this.token = json.access_token;
 	}
-
-	// async getGraphClient() {
-	// 	await this.authorized;
-	//
-	// 	return new GraphQLClient(this.graphUrl.toString(), {
-	// 		headers: this.getAuthorizationHeader()
-	// 	});
-	// }
-
-	// async getAllAccountEdges(
-	// 	accounts: Array<AccountEdge> = [],
-	// 	after?: string
-	// ): Promise<Array<AccountEdge>> {
-	// 	const client = await this.getGraphClient();
-	//
-	// 	const query = gql`
-	// 		query accounts {
-	// 			uiapi {
-	// 				query {
-	// 					Account(
-	// 						where: { TCM_Member__c: { eq: true } }
-	// 						first: 2000
-	// 						${after ? `after: "${after}"` : 'upperBound: 20000'}
-	// 					) {
-	// 						edges {
-	// 							node {
-	// 								Id
-	// 								Name {
-	// 									value
-	// 								}
-	// 								BillingLatitude {
-	// 									value
-	// 								}
-	// 								BillingLongitude {
-	// 									value
-	// 								}
-	// 							}
-	// 						}
-	// 						totalCount
-	// 						pageInfo {
-	// 							hasNextPage
-	// 							endCursor
-	// 						}
-	// 					}
-	// 				}
-	// 			}
-	// 		}
-	// 	`;
-	//
-	// 	const data = await client.request<Data>(query);
-	// 	const accountResults = data.uiapi.query.Account;
-	// 	accounts.push(...accountResults.edges);
-	//
-	// 	if (!accountResults.pageInfo.hasNextPage) return accounts;
-	//
-	// 	return this.getAllAccountEdges(accounts, accountResults.pageInfo.endCursor);
-	// }
 
 	async resHandler<T extends object>(res: Response) {
 		const json: SFApiError | T = await res.json();

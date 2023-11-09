@@ -2,6 +2,9 @@ import { html, PropertyValues } from 'lit';
 import { ref, Ref, createRef } from 'lit/directives/ref.js';
 import { customElement } from 'lit/decorators.js';
 
+// @ts-ignore
+import debounce from 'lodash.debounce';
+
 import { Loader } from '@googlemaps/js-api-loader';
 import { MarkerClusterer } from '@googlemaps/markerclusterer';
 
@@ -89,6 +92,23 @@ const results = [
 export class TcmMap extends TwElement {
 	mapRef: Ref<HTMLDivElement> = createRef();
 
+	getNewResults(
+		map: google.maps.Map,
+		markers: google.maps.marker.AdvancedMarkerElement[]
+	) {
+		const boundedMarkers = [];
+		for (let i = 0; i < markers.length && boundedMarkers.length < 20; i++) {
+			if (map.getBounds()?.contains(markers[i].position!)) {
+				boundedMarkers.push(markers[i]);
+			}
+		}
+
+		// @ts-ignore
+		const ids = boundedMarkers.map(x => x.attributes['data-id']);
+
+		console.log(ids);
+	}
+
 	protected async firstUpdated(_changedProperties: PropertyValues) {
 		super.firstUpdated(_changedProperties);
 
@@ -112,7 +132,14 @@ export class TcmMap extends TwElement {
 
 		const res = await fetch('http://localhost:3000/accounts');
 		const data = (await res.json()) as [string, string, number, number][];
-		const points = data.map(x => ({ lat: x[2], lng: x[3] }));
+		const locations = data.map(x => ({
+			id: x[0],
+			name: x[1],
+			position: {
+				lat: x[2],
+				lng: x[3]
+			}
+		}));
 
 		const infoWindow = new InfoWindow({
 			content: '',
@@ -122,12 +149,14 @@ export class TcmMap extends TwElement {
 		// Create an array of alphabetical characters used to label the markers.
 		const labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 		// Add some markers to the map.
-		const markers = points.map((position, i) => {
+		const markers = locations.map(({ id, name, position }, i) => {
 			const label = labels[i % labels.length];
+
 			const pinGlyph = new PinElement({
 				glyph: label,
 				glyphColor: 'white'
 			});
+
 			const marker = new AdvancedMarkerElement({
 				position,
 				content: pinGlyph.element
@@ -136,14 +165,22 @@ export class TcmMap extends TwElement {
 			// markers can only be keyboard focusable when they have click listeners
 			// open info window when marker is clicked
 			marker.addListener('click', () => {
-				infoWindow.setContent(position.lat + ', ' + position.lng);
+				infoWindow.setContent(name);
 				infoWindow.open(map, marker);
 			});
+
+			marker.attributes['data-id'] = id;
+
 			return marker;
 		});
 
 		// Add a marker clusterer to manage the markers.
 		new MarkerClusterer({ markers, map });
+
+		map.addListener(
+			'bounds_changed',
+			debounce(this.getNewResults.bind(this, map, markers), 350)
+		);
 	}
 
 	render() {

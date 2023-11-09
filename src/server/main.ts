@@ -9,6 +9,8 @@ import sfClient from './salesforce/SFClient';
 const app = express();
 app.use(cors());
 
+app.use(express.json());
+
 function asyncHandler(
 	cb: (req: Request, res: Response, next: NextFunction) => Promise<void>
 ) {
@@ -21,6 +23,14 @@ app.get(
 	'/accounts',
 	asyncHandler(async (_, res) => {
 		res.json(await sfClient.getTcmMembersFull());
+	})
+);
+
+app.post(
+	'/accounts/details',
+	asyncHandler(async (req, res) => {
+		const ids = req.body.ids;
+		res.json(await sfClient.getTcmMemberDetails(ids));
 	})
 );
 

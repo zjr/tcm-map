@@ -1,10 +1,13 @@
+// noinspection SqlNoDataSourceInspection
+
 interface SFApiError {
 	error: string;
 	error_description: string;
 }
 
 interface SFRecord {
-	attributes: {
+	// optional because we probably don't care about them, at least usually
+	attributes?: {
 		// ex: "Account"
 		type: string;
 		// Base resource URL
@@ -12,8 +15,57 @@ interface SFRecord {
 	};
 }
 
+interface BareAccount extends SFRecord {
+	// ex: "0015G00001Uyc7lQAB"
+	Id: string;
+	// ex: "Project MORE Foundation"
+	Name: string;
+}
+
+interface PartialAccount extends BareAccount {
+	// ex: 37.3539663
+	BillingLatitude: number;
+	// ex: -121.9529992
+	BillingLongitude: number;
+}
+
+export interface DetailAccount extends BareAccount {
+	BillingCity?: string;
+	BillingState?: string;
+	Website?: string;
+	PhotoUrl?: string;
+	npo02__MembershipJoinDate__c?: string;
+	Industry_1__c?: string;
+	Industry_2__c?: string;
+	Industry_3__c?: string;
+	Advocacy_org_type__c?: boolean;
+	Business_org_type__c?: boolean;
+	Faith_org_type__c?: boolean;
+	Government_org_type__c?: boolean;
+	Education_org_type__c?: boolean;
+	Nonprofit_org_type__c?: boolean;
+	Other_org_type__c?: boolean;
+	County__c?: string;
+	Region_2_0__c?: string;
+	Logo__c?: string;
+	Logo_Last_Confirmed__c?: string;
+}
+
 interface SFApiResponse {
 	dunno: string;
+}
+
+interface SFDescribeResponse {
+	fields: Array<{
+		name: string;
+		label: string;
+		defaultValue: unknown | null;
+		inlineHelpText: string;
+		type: string;
+		custom: boolean;
+	}>;
+	urls: { [k: string]: string };
+	searchable: boolean;
 }
 
 interface SFApiQueryResponse<T = unknown> extends SFApiResponse {
@@ -112,7 +164,7 @@ export class SFClient {
 			this.standardRestOptions
 		);
 
-		return await this.resHandler<SFApiResponse>(res);
+		return await this.resHandler<SFDescribeResponse>(res);
 	}
 
 	async paginateQuery<T>(data: SFApiQueryResponse<T>): Promise<Array<T>> {
@@ -130,36 +182,24 @@ export class SFClient {
 	}
 
 	async getTcmMembersFull() {
-		interface PartialAccount extends SFRecord {
-			// ex: "0015G00001Uyc7lQAB"
-			Id: string;
-			// ex: "Project MORE Foundation"
-			Name: string;
-			// ex: 37.3539663
-			BillingLatitude: number;
-			// ex: -121.9529992
-			BillingLongitude: number;
-		}
-
 		const url = this.getRestUrl('/query');
-		// noinspection SqlNoDataSourceInspection
 		url.searchParams.set(
 			'q',
 			`
-				 SELECT
-					 Id, Name, BillingLatitude, BillingLongitude
-				 FROM
-					 Account
-				 WHERE
-					 TCM_Member__c = true and
-				 	 BillingLatitude <> null and
-				 	 BillingLongitude <> null
+				SELECT
+					Id, Name, BillingLatitude, BillingLongitude
+				FROM
+					Account
+				WHERE
+					TCM_Member__c = true and
+					BillingLatitude <> null and
+					BillingLongitude <> null and
+					IsDeleted <> true
 			`
 		);
 
 		const res = await fetch(url, this.standardRestOptions);
 		const data = await this.resHandler<SFApiQueryResponse<PartialAccount>>(res);
-
 		const allRecords = await this.paginateQuery<PartialAccount>(data);
 
 		return allRecords.map(x => [
@@ -169,6 +209,86 @@ export class SFClient {
 			x.BillingLongitude
 		]);
 	}
+
+	async getTcmMemberDetails(ids: string[]) {
+		const query = `
+			SELECT
+				Id,
+				Name,
+				BillingCity,
+				BillingState,
+				BillingLatitude,
+				BillingLongitude,
+				Website,
+				npo02__MembershipJoinDate__c,
+				Industry_1__c,
+				Industry_2__c,
+				Industry_3__c,
+				Advocacy_org_type__c,
+				Business_org_type__c,
+				Faith_org_type__c,
+				Government_org_type__c,
+				Education_org_type__c,
+				Nonprofit_org_type__c,
+				Other_org_type__c,
+				County__c,
+				Region_2_0__c,
+				Logo__c,
+				Logo_Last_Confirmed__c,
+			FROM
+				Account
+			WHERE
+				Id in ('${ids.join("', '")}')
+			LIMIT 50
+		`;
+
+		const url = this.getRestUrl('/query');
+		url.searchParams.set('q', query);
+
+		const res = await fetch(url, this.standardRestOptions);
+		const data = await this.resHandler<SFApiQueryResponse<DetailAccount>>(res);
+		return await this.paginateQuery<DetailAccount>(data);
+	}
+
+	async getDistinctIndustries() {
+		const url = this.getRestUrl('/query');
+		url.searchParams.set(
+			'q',
+			`
+				SELECT
+					Industry_3__c, COUNT(Name)
+				FROM
+					Account
+				WHERE
+					TCM_Member__c = true and
+					IsDeleted <> true
+				GROUP BY
+					Industry_3__c
+			`
+		);
+
+		interface Distincties {
+			attributes: {
+				type: string;
+			};
+			Industry_3__c: string;
+			expr0: number;
+		}
+
+		const res = await fetch(url, this.standardRestOptions);
+		const data = await this.resHandler<SFApiQueryResponse<Distincties>>(res);
+		const allData = await this.paginateQuery<Distincties>(data);
+
+		return allData.map(x => x.Industry_3__c);
+	}
 }
 
-export default new SFClient();
+const sfClient = new SFClient();
+export default sfClient;
+
+// (async () => {
+// 	await sfClient.authorized;
+// 	return await sfClient.getDistinctIndustries();
+// })()
+// 	.then(console.log)
+// 	.catch(console.error);

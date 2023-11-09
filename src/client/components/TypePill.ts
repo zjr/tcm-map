@@ -3,30 +3,81 @@ import { customElement, property } from 'lit/decorators.js';
 
 @customElement('type-pill')
 export default class TypePill extends LitElement {
-	@property({ type: Object })
-	member: { type: string; typeLabel: string } | null = null;
+	@property({ type: String })
+	industry: string | null = null;
+
+	@property()
+	industryLabels: { [k: string]: string } = {
+		'Government & Public Sector': 'Government',
+		'Faith-based Groups': 'Faith-Based',
+		'Immigrant Rights and/or Services': 'Immigrant Rights',
+		'Community Service & Organizing': 'Community Service',
+		'Nutrition & Food Security': 'Nutrition',
+		'Youth Engagement & Services': 'Youth Engagement',
+		'LGBTQ+ Rights and/or Services': 'LGBTQ+ Rights',
+		'Civil Rights & Equity': 'Civil Rights',
+		'Disability Rights and/or Services': 'Disability Rights'
+	};
+
+	@property()
+	industries = [
+		'Government & Public Sector',
+		'Philanthropy',
+		'Other',
+		'Faith-based Groups',
+		'Early Childhood',
+		'Recreation',
+		'Immigrant Rights and/or Services',
+		'Group Engagement',
+		'Animal Rights',
+		'Education',
+		'Parent Groups',
+		'Environment',
+		'Trauma & Resilience',
+		'Child Welfare',
+		'Labor',
+		'Health',
+		'Community Service & Organizing',
+		'Legal Services',
+		'STEM',
+		'Arts',
+		'Media',
+		'Business',
+		'Nutrition & Food Security',
+		'Youth Engagement & Services',
+		'LGBTQ+ Rights and/or Services',
+		'Family Support',
+		'Civil Rights & Equity',
+		'Museums',
+		'Economic Security',
+		'Disability Rights and/or Services',
+		'Oral Health'
+	];
 
 	render() {
-		if (this.member === null) return nothing;
+		if (!this.industry) return nothing;
 
-		let colorClasses;
+		const colorClasses = [
+			'text-tcmOrange-500 bg-tcmOrange-500 ring-tcmOrange-500',
+			'bg-pink-600 text-pink-600 ring-pink-700',
+			'bg-fuchsia-600 text-fuchsia-600 ring-fuchsia-700',
+			'text-tcmTeal-800 bg-teal-500 ring-tcmTeal-800',
+			'bg-violet-600 text-violet-600 ring-violet-700',
+			'bg-sky-600 text-sky-600 ring-sky-700',
+			'bg-emerald-600 text-emerald-600 ring-emerald-700',
+			'bg-cyan-600 text-cyan-600 ring-cyan-700',
+			'bg-rose-600 text-rose-600 ring-rose-700',
+			'bg-indigo-600 text-indigo-600 ring-indigo-700'
+		];
 
-		switch (this.member.type) {
-			case 'education':
-				colorClasses = 'text-tcmOrange-500 bg-tcmOrange-500 ring-tcmOrange-500';
-				break;
-			case 'infoComm':
-				colorClasses = 'text-tcmTeal-800 bg-teal-500 ring-tcmTeal-500';
-				break;
-			case 'health':
-			default:
-				colorClasses = 'bg-sky-600 text-sky-600 ring-sky-600';
-		}
+		const industryIdx = this.industries.indexOf(this.industry);
+		const industryLabel = this.industryLabels[this.industry] || this.industry;
+		const colorClass = colorClasses[industryIdx % colorClasses.length];
 
 		return html`
 			<span
-				class="${colorClasses} inline-block rounded-full bg-opacity-10 px-2 py-1 text-xs font-medium ring-1 ring-opacity-30"
-				>${this.member.typeLabel}</span
+				class="${colorClass} inline-block w-max rounded-full bg-opacity-10 px-2 py-1 text-xs font-medium ring-1 ring-opacity-30"
+				>${industryLabel}</span
 			>
 		`;
 	}

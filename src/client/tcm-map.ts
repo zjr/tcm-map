@@ -1,9 +1,8 @@
-import { html, PropertyValues } from 'lit';
+import { css, html, nothing, PropertyValues } from 'lit';
 import { ref, Ref, createRef } from 'lit/directives/ref.js';
-import { customElement } from 'lit/decorators.js';
+import { customElement, property } from 'lit/decorators.js';
 
-// @ts-ignore
-import debounce from 'lodash.debounce';
+import debounce from 'lodash-es/debounce';
 
 import { Loader } from '@googlemaps/js-api-loader';
 import { MarkerClusterer } from '@googlemaps/markerclusterer';
@@ -13,6 +12,8 @@ import { TwElement } from './shared/tailwind.element';
 import './components/SearchControl.ts';
 import './components/FilterControls.ts';
 import './components/TypePill.ts';
+
+import { DetailAccount } from '../server/salesforce/SFClient';
 
 /**
  * TODO:
@@ -24,8 +25,8 @@ import './components/TypePill.ts';
  * - [x] email Nima/TCM about "type"
  * - [x] add the google map
  * - [ ] style the google map's place pins
- * - [ ] connect to salesforce api
- * - [ ] get lists
+ * - [x] connect to salesforce api
+ * - [x] get lists
  * - [ ] filter lists
  * - [ ] search lists
  * - [ ] add caching
@@ -33,52 +34,50 @@ import './components/TypePill.ts';
  * - [ ] prep for deployment
  */
 
-const secondsInAYear = 3.154e7;
-
 const results = [
 	{
-		name: 'YMCA of the East Bay',
-		startDate: 1698938838 - secondsInAYear * 2,
-		type: 'health',
-		typeLabel: 'Health',
-		url: 'https://google.com',
-		billingCity: 'Berkeley',
-		billingState: 'CA'
+		Id: '',
+		Name: 'YMCA of the East Bay',
+		npo02__MembershipJoinDate__c: '2014-08-07',
+		Industry_1__c: 'Government & Public Sector',
+		Website: 'https://google.com',
+		BillingCity: 'Berkeley',
+		BillingState: 'CA'
 	},
 	{
-		name: 'Urban Strategies Council',
-		startDate: 1698938838 - secondsInAYear * 5,
-		type: 'infoComm',
-		typeLabel: 'Info/Communications',
-		url: 'https://google.com',
-		billingCity: 'Oakland',
-		billingState: 'CA'
+		Id: '',
+		Name: 'Urban Strategies Council',
+		npo02__MembershipJoinDate__c: '2012-08-07',
+		Industry_1__c: 'Faith-based Groups',
+		Website: 'https://google.com',
+		BillingCity: 'Oakland',
+		BillingState: 'CA'
 	},
 	{
-		name: 'Game Theory Academy',
-		startDate: 1698938838 - secondsInAYear,
-		type: 'education',
-		typeLabel: 'Education',
-		billingCity: 'Oakland',
-		billingState: 'CA'
+		Id: '',
+		Name: 'Game Theory Academy',
+		npo02__MembershipJoinDate__c: '2011-08-07',
+		Industry_1__c: 'Early Childhood',
+		BillingCity: 'Oakland',
+		BillingState: 'CA'
 	},
 	{
-		name: 'San Francisco Unified School District',
-		startDate: 1698938838 - secondsInAYear * 7,
-		type: 'education',
-		typeLabel: 'Education',
-		url: 'https://google.com',
-		billingCity: 'San Francisco',
-		billingState: 'CA'
+		Id: '',
+		Name: 'San Francisco Unified School District',
+		npo02__MembershipJoinDate__c: '2019-08-07',
+		Industry_1__c: 'Other',
+		Website: 'https://google.com',
+		BillingCity: 'San Francisco',
+		BillingState: 'CA'
 	},
 	{
-		name: 'Yolo CASA',
-		startDate: 1698938838,
-		type: 'health',
-		typeLabel: 'Health',
-		url: 'https://google.com',
-		billingCity: 'Berkeley',
-		billingState: 'CA'
+		Id: '',
+		Name: 'Yolo CASA',
+		npo02__MembershipJoinDate__c: '2014-08-07',
+		Industry_1__c: 'Philanthropy',
+		Website: 'https://google.com',
+		BillingCity: 'Berkeley',
+		BillingState: 'CA'
 	}
 ];
 
@@ -90,23 +89,40 @@ const results = [
  */
 @customElement('tcm-map')
 export class TcmMap extends TwElement {
+	static styles = [
+		super.styles,
+		css`
+			:host {
+				display: block;
+				height: 66vh;
+			}
+		`
+	];
+
 	mapRef: Ref<HTMLDivElement> = createRef();
 
-	getNewResults(
+	@property()
+	members: DetailAccount[] = results;
+
+	async getNewResults(
 		map: google.maps.Map,
 		markers: google.maps.marker.AdvancedMarkerElement[]
 	) {
-		const boundedMarkers = [];
-		for (let i = 0; i < markers.length && boundedMarkers.length < 20; i++) {
-			if (map.getBounds()?.contains(markers[i].position!)) {
-				boundedMarkers.push(markers[i]);
+		const ids = [];
+
+		for (const marker of markers) {
+			if (map.getBounds()?.contains(marker.position!)) {
+				ids.push(marker.getAttribute('data-id'));
 			}
 		}
 
-		// @ts-ignore
-		const ids = boundedMarkers.map(x => x.attributes['data-id']);
+		const res = await fetch('http://localhost:3000/accounts/details', {
+			method: 'post',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ ids })
+		});
 
-		console.log(ids);
+		this.members = await res.json();
 	}
 
 	protected async firstUpdated(_changedProperties: PropertyValues) {
@@ -169,7 +185,7 @@ export class TcmMap extends TwElement {
 				infoWindow.open(map, marker);
 			});
 
-			marker.attributes['data-id'] = id;
+			marker.setAttribute('data-id', id);
 
 			return marker;
 		});
@@ -185,52 +201,73 @@ export class TcmMap extends TwElement {
 
 	render() {
 		return html`
-			<div id="root" class="flex flex-row overflow-hidden">
-				<div class="z-10 space-y-4 bg-white font-sans shadow-2xl">
+			<div id="root" class="flex h-full flex-row overflow-hidden">
+				<div class="z-10 flex flex-col space-y-4 bg-white font-sans shadow-2xl">
 					<search-control></search-control>
 					<filter-controls class="block"></filter-controls>
-					<div
-						class="mx-4 divide-y divide-gray-100 border-b border-b-gray-100 sm:mx-6 lg:mx-8"
-					>
-						${results.map(member => {
-							const memberLink = member.url
-								? [
-										' • ',
-										html`<a
-											href=${member.url}
-											class="text-tcmYellow-900 underline"
-											>Visit Website</a
-										>`
-								  ]
-								: null;
+					<div class="h-full max-w-lg overflow-y-scroll px-4 sm:px-6 lg:px-8">
+						<div class="divide-y divide-gray-100 border-b border-b-gray-100 ">
+							${this.members.map(member => {
+								const memberLink = member.Website
+									? [
+											' • ',
+											html`<a
+												href=${member.Website}
+												class="text-tcmYellow-900 underline"
+												>Visit Website</a
+											>`
+									  ]
+									: null;
 
-							return html`
-								<div class="flex justify-between space-x-4 py-5">
-									<div class="flex space-x-4">
-										<!--<img src="" alt="" class="h-14 w-14 rounded-full" />-->
-										<div class="space-y-1.5">
-											<p class="text-lg font-bold text-gray-800">
-												${member.name}
+								return html`
+									<div class="flex justify-between space-x-4 py-5">
+										<div class="flex max-w-[28ch] space-x-4">
+											<!--<img src="" alt="" class="h-14 w-14 rounded-full" />-->
+											<div class="space-y-1.5">
+												<p class="text-lg font-bold text-gray-800">
+													${member.Name}
+												</p>
+												<p class="text-gray-500">
+													${member.npo02__MembershipJoinDate__c
+														? html`<span
+																>Member since
+																${new Date(
+																	member.npo02__MembershipJoinDate__c
+																).getFullYear()}</span
+														  > `
+														: nothing}
+													${memberLink}
+												</p>
+											</div>
+										</div>
+										<div class="space-y-2 pt-[5px]">
+											<p class="text-right text-gray-600">
+												${member.BillingCity}, ${member.BillingState}
 											</p>
-											<p class="text-gray-500">
-												<span
-													>Member since
-													${new Date(
-														member.startDate * 1000
-													).getFullYear()}</span
-												>${memberLink}
-											</p>
+											<div
+												class="flex max-w-[28ch] flex-wrap justify-end gap-2"
+											>
+												${member.Industry_1__c
+													? html`<type-pill
+															industry=${member.Industry_1__c}
+													  ></type-pill>`
+													: nothing}
+												${member.Industry_2__c
+													? html`<type-pill
+															industry=${member.Industry_2__c}
+													  ></type-pill>`
+													: nothing}
+												${member.Industry_3__c
+													? html`<type-pill
+															industry=${member.Industry_3__c}
+													  ></type-pill>`
+													: nothing}
+											</div>
 										</div>
 									</div>
-									<div class="space-y-2 pt-[5px] text-right">
-										<p class="text-gray-600">
-											${member.billingCity}, ${member.billingState}
-										</p>
-										<type-pill .member=${member}></type-pill>
-									</div>
-								</div>
-							`;
-						})}
+								`;
+							})}
+						</div>
 					</div>
 				</div>
 				<div class="flex-grow" id="map" ${ref(this.mapRef)}></div>

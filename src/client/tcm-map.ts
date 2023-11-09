@@ -148,8 +148,8 @@ export class TcmMap extends TwElement {
 
 	render() {
 		return html`
-			<div id="root" class="flex flex-row">
-				<div class="space-y-4 bg-white font-sans">
+			<div id="root" class="flex flex-row overflow-hidden">
+				<div class="z-10 space-y-4 bg-white font-sans shadow-2xl">
 					<search-control></search-control>
 					<filter-controls class="block"></filter-controls>
 					<div

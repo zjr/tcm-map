@@ -158,15 +158,6 @@ export class SFClient {
 		return json;
 	}
 
-	async describeAccount() {
-		const res = await fetch(
-			this.getRestUrl('/sobjects/Account/describe'),
-			this.standardRestOptions
-		);
-
-		return await this.resHandler<SFDescribeResponse>(res);
-	}
-
 	async paginateQuery<T>(data: SFApiQueryResponse<T>): Promise<Array<T>> {
 		if (data.done || !data.nextRecordsUrl) return data.records;
 
@@ -179,6 +170,15 @@ export class SFClient {
 		newData.records = data.records.concat(newData.records);
 
 		return this.paginateQuery(newData);
+	}
+
+	async describeAccount() {
+		const res = await fetch(
+			this.getRestUrl('/sobjects/Account/describe'),
+			this.standardRestOptions
+		);
+
+		return await this.resHandler<SFDescribeResponse>(res);
 	}
 
 	async getTcmMembersFull() {

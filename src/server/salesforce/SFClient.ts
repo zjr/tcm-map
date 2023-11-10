@@ -234,7 +234,7 @@ export class SFClient {
 				County__c,
 				Region_2_0__c,
 				Logo__c,
-				Logo_Last_Confirmed__c,
+				Logo_Last_Confirmed__c
 			FROM
 				Account
 			WHERE

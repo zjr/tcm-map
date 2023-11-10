@@ -110,9 +110,9 @@ export class TcmMap extends TwElement {
 	) {
 		const ids = [];
 
-		for (const marker of markers) {
-			if (map.getBounds()?.contains(marker.position!)) {
-				ids.push(marker.getAttribute('data-id'));
+		for (let i = 0; i < markers.length && ids.length < 500; i++) {
+			if (map.getBounds()?.contains(markers[i].position!)) {
+				ids.push(markers[i].getAttribute('data-id'));
 			}
 		}
 

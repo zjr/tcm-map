@@ -5,6 +5,11 @@ interface SFApiError {
 	error_description: string;
 }
 
+interface SFQueryApiError {
+	message: string;
+	errorCode: string;
+}
+
 interface SFRecord {
 	// optional because we probably don't care about them, at least usually
 	attributes?: {
@@ -147,12 +152,29 @@ export class SFClient {
 	}
 
 	async resHandler<T extends object>(res: Response) {
-		const json: SFApiError | T = await res.json();
+		let json: T | SFApiError | SFQueryApiError[];
+
+		try {
+			json = await res.json();
+		} catch (e) {
+			console.error(res.status, res.statusText);
+			throw e;
+		}
 
 		if ('error' in json) {
-			throw new Error(
-				json?.error_description || json?.error || 'unknown error'
+			const e = new Error(
+				json.error_description || json.error || 'unknown error'
 			);
+			e.name = json.error || 'SfApiError';
+			throw e;
+		}
+
+		if (Array.isArray(json)) {
+			const e = new Error(
+				json[0].message || json[0].errorCode || json.toString()
+			);
+			e.name = json[0].errorCode || 'SfQueryApiError';
+			throw e;
 		}
 
 		return json;

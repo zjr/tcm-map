@@ -32,6 +32,7 @@ import { DetailAccount } from '../server/salesforce/SFClient';
  * - [ ] search lists
  * - [ ] add caching
  * - [ ] affect map by filtering / searching
+ * - [ ] load initial set to replace `results` array
  * - [ ] prep for deployment
  */
 
@@ -210,7 +211,7 @@ export class TcmMap extends TwElement {
 					<search-control class="mb-4"></search-control>
 					<filter-controls></filter-controls>
 					<members-list
-						class="h-full overflow-y-scroll "
+						class="h-full overflow-y-scroll"
 						.members=${this.members}
 					></members-list>
 				</div>

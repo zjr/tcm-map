@@ -1,4 +1,4 @@
-import { css, html, nothing, PropertyValues } from 'lit';
+import { css, html, PropertyValues } from 'lit';
 import { ref, Ref, createRef } from 'lit/directives/ref.js';
 import { customElement, property } from 'lit/decorators.js';
 
@@ -12,6 +12,7 @@ import { TwElement } from './shared/tailwind.element';
 import './components/SearchControl.ts';
 import './components/FilterControls.ts';
 import './components/TypePill.ts';
+import './components/MembersList.ts';
 
 import { DetailAccount } from '../server/salesforce/SFClient';
 
@@ -178,7 +179,7 @@ export class TcmMap extends TwElement {
 				content: pinGlyph.element
 			});
 
-			// markers can only be keyboard focusable when they have click listeners
+			// markers can only be keyboard-focusable when they have click listeners
 			// open info window when marker is clicked
 			marker.addListener('click', () => {
 				infoWindow.setContent(name);
@@ -203,74 +204,14 @@ export class TcmMap extends TwElement {
 		return html`
 			<div id="root" class="flex h-full flex-row overflow-hidden">
 				<div
-					class="z-10 flex w-full flex-col space-y-4 bg-white font-sans shadow-2xl sm:w-[32rem]"
+					class="z-10 flex w-full flex-col bg-white font-sans shadow-2xl sm:w-[32rem]"
 				>
-					<search-control></search-control>
-					<filter-controls class="block"></filter-controls>
-					<div class="h-full overflow-y-scroll px-4 sm:px-6 lg:px-8">
-						<div class="divide-y divide-gray-100 border-b border-b-gray-100 ">
-							${this.members.map(member => {
-								const memberLink = member.Website
-									? [
-											' • ',
-											html`<a
-												href=${member.Website}
-												class="text-tcmYellow-900 underline"
-												>Visit Website</a
-											>`
-									  ]
-									: null;
-
-								return html`
-									<div class="flex justify-between gap-4 py-5">
-										<div class="flex">
-											<!--<img src="" alt="" class="h-14 w-14 rounded-full" />-->
-											<div class="flex flex-col justify-between gap-2.5">
-												<p class="text-lg font-bold leading-5 text-gray-800">
-													${member.Name}
-												</p>
-												<p class="py-[3px] text-gray-500">
-													${member.npo02__MembershipJoinDate__c
-														? html`<span
-																>Member since
-																${new Date(
-																	member.npo02__MembershipJoinDate__c
-																).getFullYear()}</span
-														  >`
-														: nothing}
-													${memberLink}
-												</p>
-											</div>
-										</div>
-										<div
-											class="flex flex-col items-end justify-between gap-3 pt-px"
-										>
-											<p class="w-max max-w-[20ch] text-right text-gray-600">
-												${member.BillingCity}, ${member.BillingState}
-											</p>
-											<div class="flex flex-wrap justify-end gap-2">
-												${member.Industry_1__c
-													? html`<type-pill
-															industry=${member.Industry_1__c}
-													  ></type-pill>`
-													: nothing}
-												${member.Industry_2__c
-													? html`<type-pill
-															industry=${member.Industry_2__c}
-													  ></type-pill>`
-													: nothing}
-												${member.Industry_3__c
-													? html`<type-pill
-															industry=${member.Industry_3__c}
-													  ></type-pill>`
-													: nothing}
-											</div>
-										</div>
-									</div>
-								`;
-							})}
-						</div>
-					</div>
+					<search-control class="mb-4"></search-control>
+					<filter-controls></filter-controls>
+					<members-list
+						class="h-full overflow-y-scroll "
+						.members=${this.members}
+					></members-list>
 				</div>
 				<div class="flex-grow" id="map" ${ref(this.mapRef)}></div>
 			</div>

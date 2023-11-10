@@ -134,12 +134,13 @@ export class TcmMap extends TwElement {
 			version: 'weekly'
 		});
 
-		await loader.load();
-		const { Map, InfoWindow } = (await google.maps.importLibrary(
+		const { Map, InfoWindow } = (await loader.importLibrary(
 			'maps'
 		)) as google.maps.MapsLibrary;
-		const { AdvancedMarkerElement, PinElement } =
-			(await google.maps.importLibrary('marker')) as google.maps.MarkerLibrary;
+
+		const { AdvancedMarkerElement, PinElement } = (await loader.importLibrary(
+			'marker'
+		)) as google.maps.MarkerLibrary;
 
 		const map = new Map(this.mapRef.value!, {
 			center: { lat: 37.775, lng: -122.419 },

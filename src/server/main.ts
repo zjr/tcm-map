@@ -29,8 +29,7 @@ app.get(
 app.post(
 	'/accounts/details',
 	asyncHandler(async (req, res) => {
-		const ids = req.body.ids;
-		res.json(await sfClient.getTcmMemberDetails(ids));
+		res.json(await sfClient.getTcmMemberDetails(req.body));
 	})
 );
 

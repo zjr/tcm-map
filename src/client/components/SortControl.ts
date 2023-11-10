@@ -3,12 +3,15 @@ import { customElement, property, state } from 'lit/decorators.js';
 
 @customElement('sort-control')
 export default class SortControl extends LitElement {
+	@property({ type: String })
+	sort: string = 'Name_ASC';
+
 	@property()
-	sortOptions: { value: string; label: string; active?: boolean }[] = [
-		{ value: 'name_asc', label: 'A - Z', active: true },
-		{ value: 'name_desc', label: 'Z - A' },
-		{ value: 'memberSince_asc', label: 'Oldest' },
-		{ value: 'memberSince_desc', label: 'Newest' }
+	sortOptions: { value: string; label: string }[] = [
+		{ value: 'Name#ASC', label: 'A - Z' },
+		{ value: 'Name#DESC', label: 'Z - A' },
+		{ value: 'npo02__MembershipJoinDate__c#ASC', label: 'Oldest' },
+		{ value: 'npo02__MembershipJoinDate__c#DESC', label: 'Newest' }
 	];
 
 	@state()
@@ -42,19 +45,32 @@ export default class SortControl extends LitElement {
 	render() {
 		const optionEls = this.sortOptions.map((opt, idx) => {
 			const optionClasses = [
-				'block px-4 py-2 text-sm  hover:bg-gray-100',
-				opt.active ? 'font-medium text-gray-900' : 'text-gray-500'
+				'text-sm hover:bg-gray-100',
+				opt.value === this.sort ? 'font-medium text-gray-900' : 'text-gray-500'
 			].join(' ');
 
 			return html`
-				<a
-					href="#sort=${opt.value}"
+				<li
 					class=${optionClasses}
 					role="menuitem"
 					tabindex="-1"
 					id="menu-item-${idx}"
-					>${opt.label}</a
 				>
+					<button
+						class="block w-full px-4 py-2 text-left"
+						@click=${() => {
+							this._open = false;
+							return this.dispatchEvent(
+								new CustomEvent('set-sort', {
+									detail: opt.value,
+									bubbles: true
+								})
+							);
+						}}
+					>
+						${opt.label}
+					</button>
+				</li>
 			`;
 		});
 
@@ -99,7 +115,9 @@ export default class SortControl extends LitElement {
 					aria-labelledby="menu-button"
 					tabindex="-1"
 				>
-					<div class="py-1" role="none">${optionEls}</div>
+					<ul class="py-1" role="none">
+						${optionEls}
+					</ul>
 				</div>
 			</div>
 		`;

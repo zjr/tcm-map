@@ -232,8 +232,8 @@ export class SFClient {
 		]);
 	}
 
-	async getTcmMemberDetails(ids: string[]) {
-		const query = `
+	async getTcmMemberDetails({ ids, sort }: { ids: string[]; sort?: string }) {
+		let query = `
 			SELECT
 				Id,
 				Name,
@@ -261,6 +261,15 @@ export class SFClient {
 				Account
 			WHERE
 				Id in ('${ids.join("', '")}')
+		`;
+
+		if (sort) {
+			query += `
+				ORDER BY ${sort.split('#').join(' ')}
+			`;
+		}
+
+		query += `
 			LIMIT 50
 		`;
 

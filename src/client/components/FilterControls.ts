@@ -23,6 +23,9 @@ export interface IFilter {
 
 @customElement('filter-controls')
 export default class FilterControls extends LitElement {
+	@property({ type: String })
+	sort: string = 'Name#ASC';
+
 	@property()
 	filters: IFilter[] = [
 		{
@@ -228,7 +231,7 @@ export default class FilterControls extends LitElement {
 				<h2 id="filter-heading" class="sr-only">Filters</h2>
 				<div class="border-b border-gray-200 bg-white pb-4">
 					<div class="mx-auto flex justify-between px-4 sm:px-6 lg:px-8">
-						<sort-control open="true"></sort-control>
+						<sort-control sort=${this.sort}></sort-control>
 						${mobileFilterDialogToggle}
 						<div class="hidden sm:block">
 							<div class="flow-root">

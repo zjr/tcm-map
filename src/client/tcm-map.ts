@@ -99,13 +99,28 @@ export class TcmMap extends TwElement {
 	@state()
 	members: DetailAccount[] = results;
 
-	private async getMembers(e: CustomEvent) {
-		if (!Array.isArray(e.detail.ids)) return;
+	@state()
+	sort: string = 'Name#ASC';
+
+	private async setSort(e: CustomEvent) {
+		this.sort = e.detail;
+		return await this.getMembers();
+	}
+
+	@state()
+	memberIds: string[] = [];
+
+	private async getMembers(e?: CustomEvent) {
+		if (e && !Array.isArray(e.detail.ids)) return;
+
+		if (e?.detail?.ids) {
+			this.memberIds = e.detail.ids;
+		}
 
 		const res = await fetch('http://localhost:3000/accounts/details', {
 			method: 'post',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ ids: e.detail.ids })
+			body: JSON.stringify({ ids: this.memberIds, sort: this.sort })
 		});
 
 		this.members = await res.json();
@@ -118,7 +133,10 @@ export class TcmMap extends TwElement {
 					class="z-10 flex w-full flex-col bg-white font-sans shadow-2xl sm:w-[32rem]"
 				>
 					<search-control class="mb-4"></search-control>
-					<filter-controls></filter-controls>
+					<filter-controls
+						sort=${this.sort}
+						@set-sort=${this.setSort.bind(this)}
+					></filter-controls>
 					<members-list
 						class="h-full overflow-y-scroll"
 						.members=${this.members}

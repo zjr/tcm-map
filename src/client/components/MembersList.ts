@@ -13,7 +13,9 @@ export default class MembersList extends LitElement {
 	render() {
 		return html`
 			<div class="px-4 sm:px-6 lg:px-8">
-				<ul class="divide-y divide-gray-100 border-b border-b-gray-100">
+				<ul
+					class="mb-4 divide-y-2 divide-dashed divide-gray-200 border-b-2 border-dashed border-b-gray-200 [&>*]:block"
+				>
 					${this.members.map(
 						member => html`<member-element .member=${member}></member-element>`
 					)}

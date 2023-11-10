@@ -202,10 +202,12 @@ export class TcmMap extends TwElement {
 	render() {
 		return html`
 			<div id="root" class="flex h-full flex-row overflow-hidden">
-				<div class="z-10 flex flex-col space-y-4 bg-white font-sans shadow-2xl">
+				<div
+					class="z-10 flex w-full flex-col space-y-4 bg-white font-sans shadow-2xl sm:w-[32rem]"
+				>
 					<search-control></search-control>
 					<filter-controls class="block"></filter-controls>
-					<div class="h-full max-w-lg overflow-y-scroll px-4 sm:px-6 lg:px-8">
+					<div class="h-full overflow-y-scroll px-4 sm:px-6 lg:px-8">
 						<div class="divide-y divide-gray-100 border-b border-b-gray-100 ">
 							${this.members.map(member => {
 								const memberLink = member.Website
@@ -220,33 +222,33 @@ export class TcmMap extends TwElement {
 									: null;
 
 								return html`
-									<div class="flex justify-between space-x-4 py-5">
-										<div class="flex max-w-[28ch] space-x-4">
+									<div class="flex justify-between gap-4 py-5">
+										<div class="flex">
 											<!--<img src="" alt="" class="h-14 w-14 rounded-full" />-->
-											<div class="space-y-1.5">
-												<p class="text-lg font-bold text-gray-800">
+											<div class="flex flex-col justify-between gap-2.5">
+												<p class="text-lg font-bold leading-5 text-gray-800">
 													${member.Name}
 												</p>
-												<p class="text-gray-500">
+												<p class="py-[3px] text-gray-500">
 													${member.npo02__MembershipJoinDate__c
 														? html`<span
 																>Member since
 																${new Date(
 																	member.npo02__MembershipJoinDate__c
 																).getFullYear()}</span
-														  > `
+														  >`
 														: nothing}
 													${memberLink}
 												</p>
 											</div>
 										</div>
-										<div class="space-y-2 pt-[5px]">
-											<p class="text-right text-gray-600">
+										<div
+											class="flex flex-col items-end justify-between gap-3 pt-px"
+										>
+											<p class="w-max max-w-[20ch] text-right text-gray-600">
 												${member.BillingCity}, ${member.BillingState}
 											</p>
-											<div
-												class="flex max-w-[28ch] flex-wrap justify-end gap-2"
-											>
+											<div class="flex flex-wrap justify-end gap-2">
 												${member.Industry_1__c
 													? html`<type-pill
 															industry=${member.Industry_1__c}

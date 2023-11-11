@@ -1,7 +1,7 @@
 import { css, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 
-import { TwElement } from './shared/tailwind.element';
+import { TwElement } from './components/shared/tailwind.element';
 
 import './components/SearchControl.ts';
 import './components/FilterControls.ts';

@@ -1,7 +1,7 @@
 import { html, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
-import { TwElement } from '../shared/tailwind.element';
+import { TwElement } from './shared/tailwind.element';
 import { IFilter, IFilterOption } from './FilterControls';
 
 @customElement('active-filters')

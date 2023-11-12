@@ -73,7 +73,11 @@ export default class ActiveFilters extends TwElement {
 					...Array.from(filter).reduce(
 						(acc2: IFilterOption[], value: string) => [
 							...acc2,
-							{ filterName: name, value: value, label: labels[name][value] }
+							{
+								filterName: name,
+								value: value,
+								label: labels[name]?.[value] || value.split('#').pop()
+							}
 						],
 						[]
 					)

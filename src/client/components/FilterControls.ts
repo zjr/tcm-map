@@ -243,7 +243,6 @@ export default class FilterControls extends LitElement {
 					</div>
 				</div>
 				<active-filters
-					.filters=${this.filters}
 					@clear-filter=${this.handleClearFilter}
 				></active-filters>
 			</section>

@@ -1,22 +1,25 @@
 import { html, nothing } from 'lit';
+import { consume } from '@lit/context';
 import { customElement, property } from 'lit/decorators.js';
 
+import FilterEvent from '../events/FilterEvent';
 import { TwElement } from './shared/tailwind.element';
-import { IFilter, IFilterOption } from './FilterControls';
+import { IFilterOption } from './FilterControls';
+import { industryLabels } from '../constants/industries';
+import { FiltersContext, filtersContext } from '../contexts/filtersContext';
 
 @customElement('active-filters')
 export default class ActiveFilters extends TwElement {
-	@property()
-	filters: IFilter[] | null = null;
+	@consume({ context: filtersContext, subscribe: true })
+	@property({ attribute: false })
+	public filters?: FiltersContext;
 
 	private emitUnsetFilterEvent(e: Event) {
-		if (e.target instanceof HTMLButtonElement) {
-			this.dispatchEvent(
-				new CustomEvent('clear-filter', {
-					detail: { name: e.target.name, value: e.target.value }
-				})
-			);
-		}
+		if (!(e.target instanceof HTMLButtonElement)) return;
+
+		this.dispatchEvent(
+			new FilterEvent({ key: e.target.name, val: e.target.value, del: true })
+		);
 	}
 
 	private renderFilterButton(opt: IFilterOption) {
@@ -53,20 +56,29 @@ export default class ActiveFilters extends TwElement {
 		`;
 	}
 
-	render() {
-		const activeFilters = this.filters?.reduce(
-			(acc: IFilterOption[], filter) => {
-				if (!filter.options?.length) return acc;
+	getActiveFilters(): IFilterOption[] {
+		if (!this.filters) return [];
+
+		return Object.entries(this.filters).reduce(
+			(acc: IFilterOption[], entry) => {
+				const [name, filter]: [string, Set<string>] = entry;
 				return [
 					...acc,
-					...filter.options.filter(option => {
-						option.filterName = filter.value;
-						return option.checked;
-					})
+					...Array.from(filter).reduce(
+						(acc2: IFilterOption[], value: string) => [
+							...acc2,
+							{ filterName: name, value: value, label: industryLabels[value] }
+						],
+						[]
+					)
 				];
 			},
 			[]
 		);
+	}
+
+	render() {
+		const activeFilters = this.getActiveFilters();
 
 		return html`
 			<div class="bg-gray-100">

@@ -1,9 +1,11 @@
 import { css, html } from 'lit';
+import { provide } from '@lit/context';
 import { customElement, state } from 'lit/decorators.js';
 
 import FilterEvent from './events/FilterEvent';
 import { TwElement } from './components/shared/tailwind.element';
 import { DetailAccount } from '../server/salesforce/SfClient';
+import { FiltersContext, filtersContext } from './contexts/filtersContext';
 
 import './components/SearchControl.ts';
 import './components/FilterControls.ts';
@@ -96,15 +98,19 @@ export class TcmMap extends TwElement {
 		`
 	];
 
-	@state() filters: { [k: string]: Set<string> } = {
+	@provide({ context: filtersContext })
+	filters: FiltersContext = {
 		locations: new Set(),
 		industries: new Set(),
 		types: new Set()
 	};
 
 	private async setFilters({ detail: { key, val, del } }: FilterEvent) {
-		this.filters[key][del ? 'delete' : 'add'](val);
-		return await this.getMembers();
+		if (Object.keys(this.filters).includes(key)) {
+			this.filters[key as keyof FiltersContext][del ? 'delete' : 'add'](val);
+			this.filters = { ...this.filters };
+			return await this.getMembers();
+		}
 	}
 
 	@state() sort: string = 'Name#ASC';

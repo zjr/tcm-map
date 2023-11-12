@@ -5,8 +5,14 @@ import { customElement, property } from 'lit/decorators.js';
 import FilterEvent from '../events/FilterEvent';
 import { TwElement } from './shared/tailwind.element';
 import { IFilterOption } from './FilterControls';
+import { typeLabels } from '../constants/types';
 import { industryLabels } from '../constants/industries';
 import { FiltersContext, filtersContext } from '../contexts/filtersContext';
+
+const labels: { [k0: string]: { [k1: string]: string } } = {
+	types: typeLabels,
+	industries: industryLabels
+};
 
 @customElement('active-filters')
 export default class ActiveFilters extends TwElement {
@@ -67,7 +73,7 @@ export default class ActiveFilters extends TwElement {
 					...Array.from(filter).reduce(
 						(acc2: IFilterOption[], value: string) => [
 							...acc2,
-							{ filterName: name, value: value, label: industryLabels[value] }
+							{ filterName: name, value: value, label: labels[name][value] }
 						],
 						[]
 					)

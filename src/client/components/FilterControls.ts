@@ -1,6 +1,7 @@
 import { html, LitElement, TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 
+import { typeLabels, types } from '../constants/types';
 import { industries, industryLabels } from '../constants/industries';
 
 import './SortControl.ts';
@@ -156,7 +157,10 @@ export default class FilterControls extends LitElement {
 		{
 			value: 'types',
 			label: 'Type',
-			options: []
+			options: types.map(i => ({
+				value: i,
+				label: typeLabels[i]
+			}))
 		}
 	];
 

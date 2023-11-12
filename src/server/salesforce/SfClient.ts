@@ -315,6 +315,14 @@ export class SfClient {
 			`;
 		}
 
+		if (filters.types.length) {
+			for (const type of filters.types) {
+				query += `
+					AND ${type} = true
+				`;
+			}
+		}
+
 		if (sort) {
 			query += `
 				ORDER BY ${sort.split('#').join(' ')}

@@ -4,7 +4,7 @@ import express, { NextFunction, Request, Response } from 'express';
 import ViteExpress from 'vite-express';
 import cors from 'cors';
 
-import sfClient from './salesforce/SFClient';
+import sfClient from './salesforce/SfClient';
 
 const app = express();
 app.use(cors());

@@ -1,7 +1,7 @@
 import { html, LitElement, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
-import { DetailAccount } from '../../server/salesforce/SFClient';
+import { DetailAccount } from '../../server/salesforce/SfClient';
 
 @customElement('member-element')
 export default class MemberElement extends LitElement {

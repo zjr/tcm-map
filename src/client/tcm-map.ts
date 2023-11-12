@@ -3,7 +3,7 @@ import { customElement, state } from 'lit/decorators.js';
 
 import FilterEvent from './events/FilterEvent';
 import { TwElement } from './components/shared/tailwind.element';
-import { DetailAccount } from '../server/salesforce/SFClient';
+import { DetailAccount } from '../server/salesforce/SfClient';
 
 import './components/SearchControl.ts';
 import './components/FilterControls.ts';

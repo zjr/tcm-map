@@ -1,16 +1,16 @@
 // noinspection SqlNoDataSourceInspection
 
-interface SFApiError {
+interface SfApiError {
 	error: string;
 	error_description: string;
 }
 
-interface SFQueryApiError {
+interface SfQueryApiError {
 	message: string;
 	errorCode: string;
 }
 
-interface SFRecord {
+interface SfRecord {
 	// optional because we probably don't care about them, at least usually
 	attributes?: {
 		// ex: "Account"
@@ -20,7 +20,7 @@ interface SFRecord {
 	};
 }
 
-interface BareAccount extends SFRecord {
+interface BareAccount extends SfRecord {
 	// ex: "0015G00001Uyc7lQAB"
 	Id: string;
 	// ex: "Project MORE Foundation"
@@ -56,11 +56,11 @@ export interface DetailAccount extends BareAccount {
 	Logo_Last_Confirmed__c?: string;
 }
 
-interface SFApiResponse {
+interface SfApiResponse {
 	dunno: string;
 }
 
-interface SFDescribeResponse {
+interface SfDescribeResponse {
 	fields: Array<{
 		name: string;
 		label: string;
@@ -73,19 +73,26 @@ interface SFDescribeResponse {
 	searchable: boolean;
 }
 
-interface SFApiQueryResponse<T = unknown> extends SFApiResponse {
+interface SfApiQueryResponse<T = unknown> extends SfApiResponse {
 	totalSize: number;
 	done: boolean;
 	nextRecordsUrl?: string;
 	records: Array<T>;
 }
 
-interface SFApiOAuthResponse extends SFApiResponse {
+interface SfApiOAuthResponse extends SfApiResponse {
 	access_token: string;
 	issued_at: string;
 }
 
-export class SFClient {
+export class SfClientError extends Error {
+	constructor(name: string, message: string) {
+		super(message);
+		this.name = name || 'SfApiError';
+	}
+}
+
+export class SfClient {
 	host: string;
 	token: string;
 
@@ -140,7 +147,7 @@ export class SFClient {
 			{ method: 'POST', headers: this.getAuthorizationHeader(true) }
 		);
 
-		const json: SFApiError | SFApiOAuthResponse = await res.json();
+		const json: SfApiError | SfApiOAuthResponse = await res.json();
 
 		if ('error' in json) {
 			throw new Error(
@@ -151,8 +158,20 @@ export class SFClient {
 		this.token = json.access_token;
 	}
 
+	async paginateQuery<T>(data: SfApiQueryResponse<T>): Promise<Array<T>> {
+		if (data.done || !data.nextRecordsUrl) return data.records;
+
+		const newData = await this.fetcher<SfApiQueryResponse<T>>(
+			this.getUrl(data.nextRecordsUrl)
+		);
+
+		newData.records = data.records.concat(newData.records);
+
+		return this.paginateQuery(newData);
+	}
+
 	async resHandler<T extends object>(res: Response) {
-		let json: T | SFApiError | SFQueryApiError[];
+		let json: T | SfApiError | SfQueryApiError[];
 
 		try {
 			json = await res.json();
@@ -162,45 +181,66 @@ export class SFClient {
 		}
 
 		if ('error' in json) {
-			const e = new Error(
-				json.error_description || json.error || 'unknown error'
-			);
-			e.name = json.error || 'SfApiError';
-			throw e;
+			throw new SfClientError(json.error, json.error_description || json.error);
 		}
 
 		if (Array.isArray(json)) {
-			const e = new Error(
+			throw new SfClientError(
+				json[0].errorCode || 'SfQueryApiError',
 				json[0].message || json[0].errorCode || json.toString()
 			);
-			e.name = json[0].errorCode || 'SfQueryApiError';
-			throw e;
 		}
 
 		return json;
 	}
 
-	async paginateQuery<T>(data: SFApiQueryResponse<T>): Promise<Array<T>> {
-		if (data.done || !data.nextRecordsUrl) return data.records;
+	async handleAuthRetry<T>(
+		e: Error | unknown,
+		retries: number,
+		cb: () => Promise<T>
+	) {
+		if (retries < 1 && (e as Error)?.name !== 'INVALID_SESSION_ID') {
+			throw e;
+		}
+		await this.authorize(true);
+		return cb();
+	}
 
-		const res = await fetch(
-			this.getUrl(data.nextRecordsUrl),
-			this.standardRestOptions
-		);
+	async fetcher<T extends object>(
+		url: RequestInfo | URL,
+		opts: RequestInit = this.standardRestOptions,
+		retries: number = 1
+	): Promise<T> {
+		try {
+			const res = await fetch(url, opts);
+			return await this.resHandler<T>(res);
+		} catch (e) {
+			return await this.handleAuthRetry(e, retries, () =>
+				this.fetcher<T>(url, opts, --retries)
+			);
+		}
+	}
 
-		const newData = await this.resHandler<SFApiQueryResponse<T>>(res);
-		newData.records = data.records.concat(newData.records);
-
-		return this.paginateQuery(newData);
+	async queryFetcher<T extends object>(
+		url: RequestInfo | URL,
+		opts: RequestInit = this.standardRestOptions,
+		retries: number = 1
+	): Promise<Array<T>> {
+		try {
+			const res = await fetch(url, opts);
+			const data = await this.resHandler<SfApiQueryResponse<T>>(res);
+			return await this.paginateQuery(data);
+		} catch (e) {
+			return await this.handleAuthRetry(e, retries, () =>
+				this.queryFetcher<T>(url, opts, --retries)
+			);
+		}
 	}
 
 	async describeAccount() {
-		const res = await fetch(
-			this.getRestUrl('/sobjects/Account/describe'),
-			this.standardRestOptions
+		return await this.fetcher<SfDescribeResponse>(
+			this.getRestUrl('/sobjects/Account/describe')
 		);
-
-		return await this.resHandler<SFDescribeResponse>(res);
 	}
 
 	async getTcmMembersFull() {
@@ -220,16 +260,9 @@ export class SFClient {
 			`
 		);
 
-		const res = await fetch(url, this.standardRestOptions);
-		const data = await this.resHandler<SFApiQueryResponse<PartialAccount>>(res);
-		const allRecords = await this.paginateQuery<PartialAccount>(data);
+		const data = await this.queryFetcher<PartialAccount>(url);
 
-		return allRecords.map(x => [
-			x.Id,
-			x.Name,
-			x.BillingLatitude,
-			x.BillingLongitude
-		]);
+		return data.map(x => [x.Id, x.Name, x.BillingLatitude, x.BillingLongitude]);
 	}
 
 	async getTcmMemberDetails({
@@ -295,9 +328,7 @@ export class SFClient {
 		const url = this.getRestUrl('/query');
 		url.searchParams.set('q', query);
 
-		const res = await fetch(url, this.standardRestOptions);
-		const data = await this.resHandler<SFApiQueryResponse<DetailAccount>>(res);
-		return await this.paginateQuery<DetailAccount>(data);
+		return await this.queryFetcher<DetailAccount>(url);
 	}
 
 	async getDistinctIndustries() {
@@ -317,7 +348,7 @@ export class SFClient {
 			`
 		);
 
-		interface Distincties {
+		interface Distincts {
 			attributes: {
 				type: string;
 			};
@@ -325,15 +356,13 @@ export class SFClient {
 			expr0: number;
 		}
 
-		const res = await fetch(url, this.standardRestOptions);
-		const data = await this.resHandler<SFApiQueryResponse<Distincties>>(res);
-		const allData = await this.paginateQuery<Distincties>(data);
+		const data = await this.queryFetcher<Distincts>(url);
 
-		return allData.map(x => x.Industry_3__c);
+		return data.map(x => x.Industry_3__c);
 	}
 }
 
-const sfClient = new SFClient();
+const sfClient = new SfClient();
 export default sfClient;
 
 // (async () => {

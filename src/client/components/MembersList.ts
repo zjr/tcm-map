@@ -1,7 +1,7 @@
 import { html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
-import { DetailAccount } from '../../server/salesforce/SFClient';
+import { DetailAccount } from '../../server/salesforce/SfClient';
 
 import './MemberElement.ts';
 

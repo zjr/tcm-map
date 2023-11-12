@@ -1,8 +1,10 @@
 import { html } from 'lit';
+import { consume } from '@lit/context';
 import { customElement, property } from 'lit/decorators.js';
 
-import { TwElement } from './shared/tailwind.element';
 import { IFilter } from './FilterControls';
+import { TwElement } from './shared/tailwind.element';
+import { FiltersContext, filtersContext } from '../contexts/filtersContext';
 
 import './FilterButton.ts';
 import './FilterDropdown.ts';
@@ -15,7 +17,14 @@ export default class FilterControl extends TwElement {
 	@property({ type: Boolean })
 	open: boolean = false;
 
+	@consume({ context: filtersContext, subscribe: true })
+	@property({ attribute: false })
+	public filters?: FiltersContext;
+
 	render() {
+		const count =
+			this.filters?.[this.filter.value as keyof FiltersContext]?.size;
+
 		return html`
 			<div class="relative inline-block px-4 text-left">
 				<filter-button
@@ -26,7 +35,7 @@ export default class FilterControl extends TwElement {
 							})
 						)}
 					label=${this.filter.label}
-					count=${this.filter.count}
+					count=${count}
 				></filter-button>
 				<filter-dropdown ?open=${this.open} .filter=${this.filter}>
 				</filter-dropdown>

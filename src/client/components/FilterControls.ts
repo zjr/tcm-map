@@ -18,7 +18,6 @@ export interface IFilterOption {
 export interface IFilter {
 	value: string;
 	label: string;
-	count?: number;
 	options?: IFilterOption[];
 	children?: TemplateResult;
 }
@@ -33,7 +32,6 @@ export default class FilterControls extends LitElement {
 		{
 			value: 'locations',
 			label: 'Location',
-			count: 1,
 			children: html`
 				<fieldset class="space-y-4">
 					<legend class="text-sm text-gray-500">Filter by Location</legend>

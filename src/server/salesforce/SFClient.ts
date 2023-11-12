@@ -272,8 +272,13 @@ export class SFClient {
 		`;
 
 		if (filters.industries.length) {
+			const industryList = filters.industries.join("', '");
 			query += `
-				AND Industry_1__c IN ('${filters.industries.join("', '")}')
+				AND (
+					Industry_1__c IN ('${industryList}') OR
+					Industry_2__c IN ('${industryList}') OR
+					Industry_3__c IN ('${industryList}')
+				)
 			`;
 		}
 

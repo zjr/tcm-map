@@ -1,6 +1,8 @@
 import { html, LitElement, TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 
+import { industries, industryLabels } from '../constants/industries';
+
 import './SortControl.ts';
 import './ActiveFilters.ts';
 import './FilterControl.ts';
@@ -29,7 +31,7 @@ export default class FilterControls extends LitElement {
 	@property()
 	filters: IFilter[] = [
 		{
-			value: 'location[]',
+			value: 'locations',
 			label: 'Location',
 			count: 1,
 			children: html`
@@ -146,26 +148,15 @@ export default class FilterControls extends LitElement {
 			`
 		},
 		{
-			value: 'industry[]',
+			value: 'industries',
 			label: 'Industry',
-			options: [
-				{ value: 'arts' },
-				{
-					value: 'education',
-					checked: true
-				},
-				{ value: 'environment' },
-				{ value: 'health' },
-				{ value: 'human rights' },
-				{ value: 'human services' },
-				{ value: 'info/communications' },
-				{ value: 'public affairs' },
-				{ value: 'public safety' },
-				{ value: 'sports' }
-			]
+			options: industries.map(i => ({
+				value: i,
+				label: industryLabels[i]
+			}))
 		},
 		{
-			value: 'type',
+			value: 'types',
 			label: 'Type',
 			options: []
 		}

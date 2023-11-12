@@ -1,6 +1,7 @@
 import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
+import FilterEvent from '../events/FilterEvent';
 import { TwElement } from './shared/tailwind.element';
 import { IFilter, IFilterOption } from './FilterControls';
 
@@ -20,6 +21,14 @@ export default class FilterButton extends TwElement {
 					id=${opt.value}
 					value=${opt.value}
 					type="checkbox"
+					@click=${(e: Event) =>
+						this.dispatchEvent(
+							new FilterEvent({
+								key: this.filter.value,
+								val: opt.value,
+								del: !(e.target as HTMLInputElement)?.checked
+							})
+						)}
 					?checked=${opt.checked}
 					class="h-4 w-4 cursor-pointer rounded border-gray-300 text-tcmOrange-500 focus:ring-tcmOrange-500"
 				/>
@@ -35,8 +44,9 @@ export default class FilterButton extends TwElement {
 
 	render() {
 		const dropdownClasses = [
-			'absolute right-0 z-10 mt-2 origin-top-right bg-gray-50 p-4 scale-0 opacity-0',
-			'shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none',
+			'absolute right-0 z-10 mt-2 origin-top-right bg-gray-50 p-4 scale-0',
+			'opacity-0 shadow-2xl ring-1 ring-black ring-opacity-5',
+			'focus:outline-none max-h-80 overflow-y-scroll',
 			this.open === null ? '' : this.open ? 'animate-pop' : 'animate-hide'
 		].join(' ');
 

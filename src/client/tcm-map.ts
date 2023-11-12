@@ -1,15 +1,15 @@
 import { css, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 
+import FilterEvent from './events/FilterEvent';
 import { TwElement } from './components/shared/tailwind.element';
+import { DetailAccount } from '../server/salesforce/SFClient';
 
 import './components/SearchControl.ts';
 import './components/FilterControls.ts';
 import './components/MembersList.ts';
 import './components/MapElement.ts';
 import './components/TypePill.ts';
-
-import { DetailAccount } from '../server/salesforce/SFClient';
 
 /**
  * TODO:
@@ -96,21 +96,28 @@ export class TcmMap extends TwElement {
 		`
 	];
 
-	@state()
-	members: DetailAccount[] = results;
+	@state() filters: { [k: string]: Set<string> } = {
+		locations: new Set(),
+		industries: new Set(),
+		types: new Set()
+	};
 
-	@state()
-	sort: string = 'Name#ASC';
+	private async setFilters({ detail: { key, val, del } }: FilterEvent) {
+		this.filters[key][del ? 'delete' : 'add'](val);
+		return await this.getMembers();
+	}
 
-	private async setSort(e: CustomEvent) {
+	@state() sort: string = 'Name#ASC';
+
+	private async setSort(e: CustomEvent<string>) {
 		this.sort = e.detail;
 		return await this.getMembers();
 	}
 
-	@state()
-	memberIds: string[] = [];
+	@state() members: DetailAccount[] = results;
+	@state() memberIds: string[] = [];
 
-	private async getMembers(e?: CustomEvent) {
+	private async getMembers(e?: CustomEvent<{ ids: string[] }>) {
 		if (e && !Array.isArray(e.detail.ids)) return;
 
 		if (e?.detail?.ids) {
@@ -120,7 +127,14 @@ export class TcmMap extends TwElement {
 		const res = await fetch('http://localhost:3000/accounts/details', {
 			method: 'post',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ ids: this.memberIds, sort: this.sort })
+			body: JSON.stringify(
+				{
+					ids: this.memberIds,
+					sort: this.sort,
+					filters: this.filters
+				},
+				(_, v) => (v instanceof Set ? [...v] : v)
+			)
 		});
 
 		this.members = await res.json();
@@ -136,6 +150,7 @@ export class TcmMap extends TwElement {
 					<filter-controls
 						sort=${this.sort}
 						@set-sort=${this.setSort.bind(this)}
+						@filter-event=${this.setFilters.bind(this)}
 					></filter-controls>
 					<members-list
 						class="h-full overflow-y-scroll"

@@ -232,7 +232,15 @@ export class SFClient {
 		]);
 	}
 
-	async getTcmMemberDetails({ ids, sort }: { ids: string[]; sort?: string }) {
+	async getTcmMemberDetails({
+		ids,
+		sort,
+		filters
+	}: {
+		ids: string[];
+		sort?: string;
+		filters: { [k in 'locations' | 'industries' | 'types']: string[] };
+	}) {
 		let query = `
 			SELECT
 				Id,
@@ -262,6 +270,12 @@ export class SFClient {
 			WHERE
 				Id in ('${ids.join("', '")}')
 		`;
+
+		if (filters.industries.length) {
+			query += `
+				AND Industry_1__c IN ('${filters.industries.join("', '")}')
+			`;
+		}
 
 		if (sort) {
 			query += `

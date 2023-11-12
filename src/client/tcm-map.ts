@@ -25,7 +25,9 @@ import './components/TypePill.ts';
  * - [ ] style the google map's place pins
  * - [x] connect to salesforce api
  * - [x] get lists
- * - [ ] filter lists
+ * - [x] filter with industry
+ * - [x] filter with type
+ * - [ ] filter with locations
  * - [ ] search lists
  * - [ ] add caching
  * - [ ] affect map by filtering / searching

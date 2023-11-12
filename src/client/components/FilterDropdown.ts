@@ -1,9 +1,11 @@
 import { html } from 'lit';
+import { consume } from '@lit/context';
 import { customElement, property } from 'lit/decorators.js';
 
 import FilterEvent from '../events/FilterEvent';
 import { TwElement } from './shared/tailwind.element';
 import { IFilter, IFilterOption } from './FilterControls';
+import { FiltersContext, filtersContext } from '../contexts/filtersContext';
 
 @customElement('filter-dropdown')
 export default class FilterButton extends TwElement {
@@ -13,7 +15,15 @@ export default class FilterButton extends TwElement {
 	@property({ type: Boolean })
 	open: boolean | null = null;
 
+	@consume({ context: filtersContext, subscribe: true })
+	@property({ attribute: false })
+	public filters?: FiltersContext;
+
 	private renderFilterOptions(opt: IFilterOption) {
+		const checked = this.filters?.[
+			this.filter.value as keyof FiltersContext
+		].has(opt.value);
+
 		return html`
 			<div class="flex items-center">
 				<input
@@ -29,7 +39,7 @@ export default class FilterButton extends TwElement {
 								del: !(e.target as HTMLInputElement)?.checked
 							})
 						)}
-					?checked=${opt.checked}
+					.checked=${checked}
 					class="h-4 w-4 cursor-pointer rounded border-gray-300 text-tcmOrange-500 focus:ring-tcmOrange-500"
 				/>
 				<label
@@ -46,7 +56,7 @@ export default class FilterButton extends TwElement {
 		const dropdownClasses = [
 			'absolute right-0 z-10 mt-2 origin-top-right bg-gray-50 p-4 scale-0',
 			'opacity-0 shadow-2xl ring-1 ring-black ring-opacity-5',
-			'focus:outline-none max-h-80 overflow-y-scroll',
+			'focus:outline-none max-h-[26rem] overflow-y-scroll',
 			this.open === null ? '' : this.open ? 'animate-pop' : 'animate-hide'
 		].join(' ');
 

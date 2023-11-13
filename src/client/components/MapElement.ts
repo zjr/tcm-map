@@ -42,8 +42,8 @@ export default class MapElement extends LitElement {
 			(await loader.importLibrary('marker')) as google.maps.MarkerLibrary;
 
 		const map = new Map(this.mapRef.value!, {
-			center: { lat: 37.775, lng: -122.419 },
-			zoom: 10,
+			center: { lat: 37, lng: -119 },
+			zoom: 6,
 			mapId: 'tcm-map'
 		});
 

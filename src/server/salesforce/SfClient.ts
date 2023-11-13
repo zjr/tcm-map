@@ -268,10 +268,12 @@ export class SfClient {
 	async getTcmMemberDetails({
 		ids,
 		sort,
+		search,
 		filters
 	}: {
 		ids: string[];
 		sort?: string;
+		search: string;
 		filters: { [k in 'locations' | 'industries' | 'types']: string[] };
 	}) {
 		let query = `
@@ -303,6 +305,10 @@ export class SfClient {
 			WHERE
 				Id in ('${ids.join("', '")}')
 		`;
+
+		if (search) {
+			query += `AND Name LIKE '%${search}%'`;
+		}
 
 		if (filters.industries.length) {
 			const industryList = filters.industries.join("', '");

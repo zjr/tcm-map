@@ -7,6 +7,17 @@ export class SearchControl extends LitElement {
 		return this;
 	}
 
+	private _onChange(e: InputEvent) {
+		if (!e.target || !('value' in e.target)) return;
+		this.dispatchEvent(
+			new CustomEvent('set-search', {
+				detail: e.target.value,
+				bubbles: true,
+				composed: true
+			})
+		);
+	}
+
 	render() {
 		return html`
 			<div class="px-4 pt-4 sm:px-6 lg:px-8">
@@ -17,7 +28,8 @@ export class SearchControl extends LitElement {
 				>
 				<div class="relative mt-2 max-w-xs shadow-sm">
 					<input
-						type="text"
+						@input=${this._onChange.bind(this)}
+						type="search"
 						name="member-search"
 						id="member-search"
 						class="peer block w-full border-0 py-1.5 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-tcmOrange-500 sm:text-sm sm:leading-6"

@@ -2,6 +2,8 @@ import { css, html } from 'lit';
 import { provide } from '@lit/context';
 import { customElement, state } from 'lit/decorators.js';
 
+import debounce from 'lodash-es/debounce';
+
 import FilterEvent from './events/FilterEvent';
 import { TwElement } from './components/shared/tailwind.element';
 import { DetailAccount } from '../server/salesforce/SfClient';
@@ -22,15 +24,15 @@ import './components/TypePill.ts';
  * - [x] drop the photos, at least for v1
  * - [x] email Nima/TCM about "type"
  * - [x] add the google map
- * - [ ] style the google map's place pins
  * - [x] connect to salesforce api
  * - [x] get lists
  * - [x] filter with industry
  * - [x] filter with type
- * - [ ] filter with locations
- * - [ ] search lists
+ * - [x] filter with locations
+ * - [x] search lists
+ * - [ ] style the google map's place pins
+ * - [ ] affect map by filtering / searching (establish og list, filter it)
  * - [ ] add caching
- * - [ ] affect map by filtering / searching
  * - [ ] load initial set to replace `results` array
  * - [ ] prep for deployment
  */
@@ -115,6 +117,13 @@ export class TcmMap extends TwElement {
 		}
 	}
 
+	@state() search?: string;
+
+	private async setSearch(e: CustomEvent<string>) {
+		this.search = e.detail;
+		return await this.getMembers();
+	}
+
 	@state() sort: string = 'Name#ASC';
 
 	private async setSort(e: CustomEvent<string>) {
@@ -139,7 +148,8 @@ export class TcmMap extends TwElement {
 				{
 					ids: this.memberIds,
 					sort: this.sort,
-					filters: this.filters
+					filters: this.filters,
+					search: this.search
 				},
 				(_, v) => (v instanceof Set ? [...v] : v)
 			)
@@ -154,7 +164,10 @@ export class TcmMap extends TwElement {
 				<div
 					class="z-10 flex w-full flex-col bg-white font-sans shadow-2xl sm:w-[32rem]"
 				>
-					<search-control class="mb-4"></search-control>
+					<search-control
+						@set-search=${debounce(this.setSearch.bind(this), 350)}
+						class="mb-4"
+					></search-control>
 					<filter-controls
 						sort=${this.sort}
 						@set-sort=${this.setSort.bind(this)}

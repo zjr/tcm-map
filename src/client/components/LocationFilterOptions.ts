@@ -17,6 +17,9 @@ export default class LocationFilterOptions extends LitElement {
 	@property()
 	level: 'regions' | 'counties' = 'regions';
 
+	@property()
+	subFilter?: string;
+
 	@consume({ context: filtersContext, subscribe: true })
 	@property({ attribute: false })
 	public filters?: FiltersContext;
@@ -68,7 +71,14 @@ export default class LocationFilterOptions extends LitElement {
 	}
 
 	render() {
-		return html`${locations[this.level].map(this.renderOption.bind(this))} `;
+		let levelLocations = locations[this.level];
+
+		if (this.subFilter) {
+			const regexp = new RegExp(this.subFilter, 'i');
+			levelLocations = levelLocations.filter(x => regexp.test(x));
+		}
+
+		return html`${levelLocations.map(this.renderOption.bind(this))} `;
 	}
 
 	protected createRenderRoot(): HTMLElement | DocumentFragment {

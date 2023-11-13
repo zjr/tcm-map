@@ -10,6 +10,15 @@ export default class LocationFilter extends LitElement {
 	@state()
 	level: levelOptions = 'regions';
 
+	@state()
+	private _locationFilter: string = '';
+
+	private _setLocationFilter(e: InputEvent) {
+		if (e.target instanceof HTMLInputElement) {
+			this._locationFilter = e.target.value;
+		}
+	}
+
 	render() {
 		return html`
 			<fieldset class="min-w-[16rem] space-y-4">
@@ -19,7 +28,12 @@ export default class LocationFilter extends LitElement {
 						level => html`
 							<span
 								class="flex flex-row items-center space-x-1.5"
-								@click=${() => (this.level = level)}
+								@click=${() => {
+									if (this.level !== level) {
+										this.level = level;
+										this._locationFilter = '';
+									}
+								}}
 							>
 								<input
 									class="m-0 h-4 w-4 cursor-pointer border-0 text-tcmOrange-500 ring-1 ring-gray-400 checked:ring-tcmOrange-500 focus:ring-tcmOrange-500"
@@ -46,6 +60,8 @@ export default class LocationFilter extends LitElement {
 						aria-controls="options"
 						aria-expanded="true"
 						placeholder="Search for a location…"
+						@input=${this._setLocationFilter.bind(this)}
+						.value=${this._locationFilter}
 					/>
 					<button
 						type="button"
@@ -73,6 +89,7 @@ export default class LocationFilter extends LitElement {
 				>
 					<location-filter-options
 						.level=${this.level}
+						.subFilter=${this._locationFilter}
 					></location-filter-options>
 				</ul>
 			</fieldset>

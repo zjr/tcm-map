@@ -3,7 +3,7 @@ import { ref, Ref, createRef } from 'lit/directives/ref.js';
 import { customElement } from 'lit/decorators.js';
 
 import { Loader } from '@googlemaps/js-api-loader';
-import { MarkerClusterer } from '@googlemaps/markerclusterer';
+import { MarkerClusterer, MarkerUtils } from '@googlemaps/markerclusterer';
 
 import debounce from 'lodash-es/debounce';
 
@@ -38,9 +38,8 @@ export default class MapElement extends LitElement {
 			'maps'
 		)) as google.maps.MapsLibrary;
 
-		const { AdvancedMarkerElement, PinElement } = (await loader.importLibrary(
-			'marker'
-		)) as google.maps.MarkerLibrary;
+		const { AdvancedMarkerElement /*,PinElement */ } =
+			(await loader.importLibrary('marker')) as google.maps.MarkerLibrary;
 
 		const map = new Map(this.mapRef.value!, {
 			center: { lat: 37.775, lng: -122.419 },
@@ -64,20 +63,21 @@ export default class MapElement extends LitElement {
 			disableAutoPan: true
 		});
 
-		// Create an array of alphabetical characters used to label the markers.
-		const labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-		// Add some markers to the map.
-		const markers = locations.map(({ id, name, position }, i) => {
-			const label = labels[i % labels.length];
-
-			const pinGlyph = new PinElement({
-				glyph: label,
-				glyphColor: 'white'
-			});
-
+		const markers = locations.map(({ id, name, position }) => {
+			const parser = new DOMParser();
+			// A marker with a custom inline SVG.
+			const pinSvgString =
+				'<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M39 21C39 35.284 24 43.5 24 43.5C24 43.5 9 35.284 9 21C9 17.0218 10.5804 13.2064 13.3934 10.3934C16.2064 7.58035 20.0218 6 24 6C27.9782 6 31.7936 7.58035 34.6066 10.3934C37.4196 13.2064 39 17.0218 39 21Z" fill="#F05C26" stroke="#F05C26" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 21C30 22.5913 29.3679 24.1174 28.2426 25.2426C27.1174 26.3679 25.5913 27 24 27C22.4087 27 20.8826 26.3679 19.7574 25.2426C18.6321 24.1174 18 22.5913 18 21C18 19.4087 18.6321 17.8826 19.7574 16.7574C20.8826 15.6321 22.4087 15 24 15C25.5913 15 27.1174 15.6321 28.2426 16.7574C29.3679 17.8826 30 19.4087 30 21Z" fill="white" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+			const pinSvg = parser.parseFromString(
+				pinSvgString,
+				'image/svg+xml'
+			).documentElement;
+			// const pinGlyph = new PinElement();
 			const marker = new AdvancedMarkerElement({
 				position,
-				content: pinGlyph.element
+				// content: pinGlyph.element
+				content: pinSvg,
+				collisionBehavior: google.maps.CollisionBehavior.REQUIRED
 			});
 
 			// markers can only be keyboard-focusable when they have click listeners
@@ -93,7 +93,66 @@ export default class MapElement extends LitElement {
 		});
 
 		// Add a marker clusterer to manage the markers.
-		new MarkerClusterer({ markers, map });
+		new MarkerClusterer({
+			map,
+			markers,
+			// @ts-ignore
+			algorithmOptions: { radius: 120 },
+			renderer: {
+				render({ count, position }, stats, map) {
+					// change size if this cluster has more markers than the mean cluster
+					const size =
+						count > Math.max(10, stats.clusters.markers.mean) ? 65 : 50;
+
+					// create svg literal with fill color
+					const svg = `
+						 <svg fill="#f05c26" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="${size}" height="${size}">
+								<circle cx="120" cy="120" opacity=".8" r="70" />
+								<circle cx="120" cy="120" opacity=".5" r="100" />
+								<text x="50%" y="50%" style="fill:#fff" text-anchor="middle" font-size="50" dominant-baseline="middle" font-family="roboto,arial,sans-serif">${count}</text>
+						 </svg>
+					`;
+
+					const title = `Cluster of ${count} markers`;
+
+					// adjust zIndex to be above other markers
+					const zIndex = Number(google.maps.Marker.MAX_ZINDEX) + count;
+
+					if (MarkerUtils.isAdvancedMarkerAvailable(map)) {
+						// create cluster SVG element
+						const parser = new DOMParser();
+						const svgEl = parser.parseFromString(
+							svg,
+							'image/svg+xml'
+						).documentElement;
+
+						svgEl.setAttribute('transform', 'translate(0 25)');
+
+						const clusterOptions = {
+							map,
+							position,
+							zIndex,
+							title,
+							content: svgEl
+						};
+
+						return new google.maps.marker.AdvancedMarkerElement(clusterOptions);
+					}
+
+					const clusterOptions = {
+						position,
+						zIndex,
+						title,
+						icon: {
+							url: `data:image/svg+xml;base64,${btoa(svg)}`,
+							anchor: new google.maps.Point(25, 25)
+						}
+					};
+
+					return new google.maps.Marker(clusterOptions);
+				}
+			}
+		});
 
 		map.addListener(
 			'bounds_changed',
@@ -104,6 +163,7 @@ export default class MapElement extends LitElement {
 	render() {
 		return html`
 			<div class="h-full w-full" id="map" ${ref(this.mapRef)}></div>
+			<div id="mapPin"></div>
 		`;
 	}
 

@@ -12,6 +12,7 @@
 		"sourceType": "module"
 	},
 	"rules": {
-		"linebreak-style": ["error", "unix"]
+		"linebreak-style": ["error", "unix"],
+		"@typescript-eslint/ban-ts-comment": 0
 	}
 }

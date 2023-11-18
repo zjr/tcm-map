@@ -15,6 +15,8 @@ export default class MemberElement extends LitElement {
 			? [
 					' • ',
 					html`<a
+						target="_blank"
+						rel="noreferrer nofollow"
 						href=${this.member.Website}
 						class="text-tcmYellow-900 underline"
 						>Visit Website</a

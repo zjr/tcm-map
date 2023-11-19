@@ -19,6 +19,8 @@ function asyncHandler(
 	};
 }
 
+app.get('/hello', (_, res) => res.send('Howdy!'));
+
 app.get(
 	'/accounts',
 	asyncHandler(async (_, res) => {

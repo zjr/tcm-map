@@ -1,89 +1,14 @@
 // noinspection SqlNoDataSourceInspection
 
-interface SfApiError {
-	error: string;
-	error_description: string;
-}
-
-interface SfQueryApiError {
-	message: string;
-	errorCode: string;
-}
-
-interface SfRecord {
-	// optional because we probably don't care about them, at least usually
-	attributes?: {
-		// ex: "Account"
-		type: string;
-		// Base resource URL
-		url: string;
-	};
-}
-
-interface BareAccount extends SfRecord {
-	// ex: "0015G00001Uyc7lQAB"
-	Id: string;
-	// ex: "Project MORE Foundation"
-	Name: string;
-}
-
-interface PartialAccount extends BareAccount {
-	// ex: 37.3539663
-	BillingLatitude: number;
-	// ex: -121.9529992
-	BillingLongitude: number;
-}
-
-export interface DetailAccount extends BareAccount {
-	BillingCity?: string;
-	BillingState?: string;
-	Website?: string;
-	PhotoUrl?: string;
-	npo02__MembershipJoinDate__c?: string;
-	Industry_1__c?: string;
-	Industry_2__c?: string;
-	Industry_3__c?: string;
-	Advocacy_org_type__c?: boolean;
-	Business_org_type__c?: boolean;
-	Faith_org_type__c?: boolean;
-	Government_org_type__c?: boolean;
-	Education_org_type__c?: boolean;
-	Nonprofit_org_type__c?: boolean;
-	Other_org_type__c?: boolean;
-	County__c?: string;
-	Region_2_0__c?: string;
-	Logo__c?: string;
-	Logo_Last_Confirmed__c?: string;
-}
-
-interface SfApiResponse {
-	dunno: string;
-}
-
-interface SfDescribeResponse {
-	fields: Array<{
-		name: string;
-		label: string;
-		defaultValue: unknown | null;
-		inlineHelpText: string;
-		type: string;
-		custom: boolean;
-	}>;
-	urls: { [k: string]: string };
-	searchable: boolean;
-}
-
-interface SfApiQueryResponse<T = unknown> extends SfApiResponse {
-	totalSize: number;
-	done: boolean;
-	nextRecordsUrl?: string;
-	records: Array<T>;
-}
-
-interface SfApiOAuthResponse extends SfApiResponse {
-	access_token: string;
-	issued_at: string;
-}
+import {
+	DetailAccount,
+	PartialAccount,
+	SfApiError,
+	SfApiOAuthResponse,
+	SfApiQueryResponse,
+	SfDescribeResponse,
+	SfQueryApiError
+} from './types';
 
 export class SfClientError extends Error {
 	constructor(name: string, message: string) {
@@ -363,103 +288,7 @@ export class SfClient {
 
 		return await this.queryFetcher<DetailAccount>(url);
 	}
-
-	// async getDistinctIndustries() {
-	// 	const url = this.getRestUrl('/query');
-	// 	url.searchParams.set(
-	// 		'q',
-	// 		`
-	// 			SELECT
-	// 				Industry_3__c, COUNT(Name)
-	// 			FROM
-	// 				Account
-	// 			WHERE
-	// 				TCM_Member__c = true and
-	// 				IsDeleted <> true
-	// 			GROUP BY
-	// 				Industry_3__c
-	// 		`
-	// 	);
-	//
-	// 	interface Distincts {
-	// 		attributes: {
-	// 			type: string;
-	// 		};
-	// 		Industry_3__c: string;
-	// 		expr0: number;
-	// 	}
-	//
-	// 	const data = await this.queryFetcher<Distincts>(url);
-	//
-	// 	return data.map(x => x.Industry_3__c);
-	// }
-
-	// async getDistinctCounties() {
-	// 	const url = this.getRestUrl('/query');
-	// 	url.searchParams.set(
-	// 		'q',
-	// 		`
-	// 			SELECT County__c
-	// 			FROM Account
-	// 			WHERE County__c <> NULL
-	// 				AND TCM_Member__c = true
-	// 				AND IsDeleted <> true
-	// 		`
-	// 	);
-	//
-	// 	interface Distincts {
-	// 		attributes: {
-	// 			type: string;
-	// 		};
-	// 		County__c: string;
-	// 		expr0: number;
-	// 	}
-	//
-	// 	const counties = new Set();
-	// 	const data = await this.queryFetcher<Distincts>(url);
-	// 	data.forEach(x => counties.add(x.County__c));
-	//
-	// 	return counties.values();
-	// }
-
-	// async getDistinctRegions() {
-	// 	const url = this.getRestUrl('/query');
-	// 	url.searchParams.set(
-	// 		'q',
-	// 		`
-	// 			SELECT
-	// 				Region_2_0__c
-	// 			FROM
-	// 				Account
-	// 			WHERE
-	// 				Region_2_0__C <> NULL AND
-	// 				TCM_Member__c = true AND
-	// 				IsDeleted <> true
-	// 		`
-	// 	);
-	//
-	// 	interface Distincts {
-	// 		attributes: {
-	// 			type: string;
-	// 		};
-	// 		Region_2_0__c: string;
-	// 		expr0: number;
-	// 	}
-	//
-	// 	const regions = new Set();
-	// 	const data = await this.queryFetcher<Distincts>(url);
-	// 	data.forEach(x => regions.add(x.Region_2_0__c));
-	//
-	// 	return regions.values();
-	// }
 }
 
 const sfClient = new SfClient();
 export default sfClient;
-
-// (async () => {
-// 	await sfClient.authorized;
-// 	return await sfClient.getDistinctCounties();
-// })()
-// 	.then(console.log)
-// 	.catch(console.error);

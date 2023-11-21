@@ -6,7 +6,7 @@ import debounce from 'lodash-es/debounce';
 
 import FilterEvent from './events/FilterEvent';
 import { TwElement } from './components/shared/tailwind.element';
-import { DetailAccount } from '../server/salesforce/SfClient';
+import { DetailAccount } from '../server/salesforce/types';
 import { FiltersContext, filtersContext } from './contexts/filtersContext';
 
 import './components/SearchControl.ts';

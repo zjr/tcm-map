@@ -1,0 +1,18 @@
+services:
+  web:
+    build: .
+    ports:
+      - '3000:3000'
+      - '24678:24678'
+    command: ['npm', 'run', 'dev']
+    develop:
+      watch:
+        - path: ./src
+          action: sync
+          target: /app/src
+        - path: package.json
+          action: rebuild
+        - path: compose.yaml
+          action: rebuild
+        - path: compose.override.yaml
+          action: rebuild

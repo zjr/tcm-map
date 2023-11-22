@@ -10,5 +10,12 @@ export default defineConfig({
 			// the proper extensions will be added
 			fileName: 'tcm-map'
 		}
+	},
+	server: {
+		host: '0.0.0.0',
+		hmr: {
+			protocol: 'http',
+			host: '0.0.0.0'
+		}
 	}
 });

@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: 'postgres'
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    secrets: &db_secrets
+      - db_password
+    environment: &db_env
+      POSTGRES_DB: tcmmap
+      POSTGRES_USER: tcmmap
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+  web:
+    depends_on:
+      - postgres
+    secrets: *db_secrets
+    environment: *db_env
+
+secrets:
+  db_password:
+    file: .secrets/db_password.txt
+
+volumes:
+  db_data:

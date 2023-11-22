@@ -1,0 +1,5 @@
+services:
+  web:
+    image: 'change'
+    ports:
+      - '80:3000'

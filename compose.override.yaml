@@ -4,7 +4,16 @@ services:
     ports:
       - '3000:3000'
       - '24678:24678'
-    command: ['npm', 'run', 'dev']
+    command:
+      [
+        'nodemon',
+        '--signal',
+        'SIGINT',
+        'src/server/main.ts',
+        '-w',
+        'src/server'
+      ]
+    init: true
     develop:
       watch:
         - path: ./src

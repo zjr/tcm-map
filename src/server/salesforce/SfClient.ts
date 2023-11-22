@@ -1,4 +1,5 @@
 // noinspection SqlNoDataSourceInspection
+import 'dotenv/config';
 
 import {
 	DetailAccount,

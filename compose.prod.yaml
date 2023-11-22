@@ -1,5 +1,7 @@
 services:
   web:
-    image: 'change'
+    build:
+      dockerfile: Dockerfile
+      target: migrate
     ports:
       - '80:3000'

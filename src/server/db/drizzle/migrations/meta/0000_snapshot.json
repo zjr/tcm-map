@@ -1,0 +1,37 @@
+{
+	"id": "788beb2a-d445-4135-b2a1-130a8f5a4f07",
+	"prevId": "00000000-0000-0000-0000-000000000000",
+	"version": "5",
+	"dialect": "pg",
+	"tables": {
+		"accounts": {
+			"name": "accounts",
+			"schema": "",
+			"columns": {
+				"Id": {
+					"name": "Id",
+					"type": "varchar(30)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"Name": {
+					"name": "Name",
+					"type": "varchar(256)",
+					"primaryKey": false,
+					"notNull": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {}
+		}
+	},
+	"enums": {},
+	"schemas": {},
+	"_meta": {
+		"schemas": {},
+		"tables": {},
+		"columns": {}
+	}
+}

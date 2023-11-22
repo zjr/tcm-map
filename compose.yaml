@@ -1,6 +1,8 @@
 services:
   postgres:
     image: 'postgres'
+    ports:
+      - 5432:5432
     volumes:
       - db_data:/var/lib/postgresql/data
     secrets: &db_secrets
@@ -10,10 +12,15 @@ services:
       POSTGRES_USER: tcmmap
       POSTGRES_PASSWORD_FILE: /run/secrets/db_password
   web:
+    build:
+      dockerfile: Dockerfile
+      target: development
     depends_on:
       - postgres
     secrets: *db_secrets
-    environment: *db_env
+    environment:
+      <<: *db_env
+      DOTENV_KEY: 'dotenv://:key_64d89face112942ee68b4d786c0d4ceeba6ef0f013e5de0a85ed4c5208c1f846@dotenv.org/vault/.env.vault?environment=development'
 
 secrets:
   db_password:

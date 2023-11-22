@@ -1,12 +1,25 @@
+import 'dotenv/config';
 import path from 'path';
+
+import postgres from 'postgres';
+import { drizzle } from 'drizzle-orm/postgres-js';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
-import { database, conn } from './database';
+
+import * as schema from './schema';
+
+export const conn = postgres({ max: 1 });
+export const database = drizzle(conn, { schema });
 
 async function run() {
-	await migrate(database, {
+	return await migrate(database, {
 		migrationsFolder: path.join(__dirname, './drizzle/migrations')
 	});
-	await conn.end();
 }
 
-run().then(console.log).catch(console.error);
+run()
+	.then(console.log)
+	.catch(console.error)
+	.finally(async () => {
+		await conn.end();
+		process.exit();
+	});

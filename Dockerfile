@@ -16,6 +16,6 @@ FROM build as migrate
 RUN npm run db:migrate:generate
 RUN npm run db:migrate:run
 
-FROM build as development
+FROM migrate as development
 
 RUN npm i -g nodemon

@@ -1,6 +1,5 @@
 services:
   web:
-    build: .
     ports:
       - '3000:3000'
       - '24678:24678'
@@ -20,6 +19,8 @@ services:
           action: sync
           target: /app/src
         - path: package.json
+          action: rebuild
+        - path: Dockerfile
           action: rebuild
         - path: compose.yaml
           action: rebuild

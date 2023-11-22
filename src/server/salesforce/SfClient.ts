@@ -1,7 +1,7 @@
 // noinspection SqlNoDataSourceInspection
 import 'dotenv/config';
 
-import {
+import type {
 	DetailAccount,
 	PartialAccount,
 	SfApiError,

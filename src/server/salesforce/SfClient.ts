@@ -1,19 +1,28 @@
 // noinspection SqlNoDataSourceInspection
 import 'dotenv/config';
 
-import { eq, like, and, inArray, or, asc, desc, AnyColumn } from 'drizzle-orm';
+import {
+	and,
+	asc,
+	desc,
+	eq,
+	inArray,
+	isNotNull,
+	like,
+	or,
+	sql
+} from 'drizzle-orm';
 
 import { db } from '../db/database';
 import { accounts } from '../db/schema';
 
 import type {
-	SfOrgType,
 	DetailAccount,
-	PartialAccount,
 	SfApiError,
 	SfApiOAuthResponse,
 	SfApiQueryResponse,
 	SfDescribeResponse,
+	SfOrgType,
 	SfQueryApiError
 } from './types';
 
@@ -175,27 +184,6 @@ export class SfClient {
 		);
 	}
 
-	async getTcmMembersFull() {
-		const url = this.getRestUrl('/query');
-		url.searchParams.set(
-			'q',
-			`
-				SELECT
-					Id, Name, BillingLatitude, BillingLongitude
-				FROM
-					Account
-				WHERE
-					TCM_Member__c = true and
-					BillingLatitude <> null and
-					BillingLongitude <> null and
-					IsDeleted <> true
-			`
-		);
-
-		const data = await this.queryFetcher<PartialAccount>(url);
-		return data.map(x => [x.Id, x.Name, x.BillingLatitude, x.BillingLongitude]);
-	}
-
 	async reseedDatabase() {
 		const query = `
 			SELECT
@@ -220,7 +208,8 @@ export class SfClient {
 				County__c,
 				Region_2_0__c,
 				Logo__c,
-				Logo_Last_Confirmed__c
+				Logo_Last_Confirmed__c,
+				TCM_Member__c
 			FROM
 				Account
 			WHERE
@@ -234,8 +223,34 @@ export class SfClient {
 		const data = await this.queryFetcher<DetailAccount>(url);
 
 		for (const account of data) {
-			await db.insert(accounts).values(account);
+			delete account.attributes;
+			await db.insert(accounts).values(account).onConflictDoUpdate({
+				target: accounts.Id,
+				set: account
+			});
 		}
+	}
+
+	private getMembersFullStmt = db
+		.select({
+			Id: accounts.Id,
+			Name: accounts.Name,
+			BillingLatitude: accounts.BillingLatitude,
+			BillingLongitude: accounts.BillingLongitude
+		})
+		.from(accounts)
+		.where(
+			and(
+				eq(accounts.TCM_Member__c, true),
+				isNotNull(accounts.BillingLatitude),
+				isNotNull(accounts.BillingLongitude)
+			)
+		)
+		.prepare('get_members_full');
+
+	async getTcmMembersFull() {
+		const data = await this.getMembersFullStmt.execute();
+		return data.map(x => [x.Id, x.Name, x.BillingLatitude, x.BillingLongitude]);
 	}
 
 	async getTcmMemberDetails({
@@ -296,8 +311,8 @@ export class SfClient {
 
 		if (sort) {
 			const [field, direction] = sort.split('#');
-			const directionFn = direction === 'asc' ? asc : desc;
-			orderBy.push(directionFn({ name: field } as AnyColumn));
+			const directionFn = direction === 'ASC' ? asc : desc;
+			orderBy.push(directionFn(sql.raw(`"${field}"`)));
 		}
 
 		return db

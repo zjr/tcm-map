@@ -7,9 +7,6 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . ./
-
-RUN npm run db:migrate:run
-
 CMD ["npm", "start"]
 
 FROM install as build

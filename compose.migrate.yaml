@@ -1,0 +1,31 @@
+services:
+  postgres:
+    image: 'postgres'
+    ports:
+      - 5432:5432
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    secrets: &db_secrets
+      - db_password
+    environment: &db_env
+      POSTGRES_DB: tcmmap
+      POSTGRES_USER: tcmmap
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+  migrate:
+    build:
+      context: .
+      dockerfile: src/server/db/docker/Dockerfile
+    depends_on:
+      - postgres
+    secrets: *db_secrets
+    environment:
+      <<: *db_env
+      PGHOST: postgres
+      DOTENV_KEY: 'dotenv://:key_64d89face112942ee68b4d786c0d4ceeba6ef0f013e5de0a85ed4c5208c1f846@dotenv.org/vault/.env.vault?environment=development'
+
+secrets:
+  db_password:
+    file: .secrets/db_password.txt
+
+volumes:
+  db_data:

@@ -1,0 +1,174 @@
+{
+	"id": "ce109099-05af-4aad-986e-9787d978a187",
+	"prevId": "26565c39-df66-4667-9844-c6fab085e047",
+	"version": "5",
+	"dialect": "pg",
+	"tables": {
+		"accounts": {
+			"name": "accounts",
+			"schema": "",
+			"columns": {
+				"Id": {
+					"name": "Id",
+					"type": "varchar(30)",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"Name": {
+					"name": "Name",
+					"type": "varchar(256)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"BillingLatitude": {
+					"name": "BillingLatitude",
+					"type": "double precision",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"BillingLongitude": {
+					"name": "BillingLongitude",
+					"type": "double precision",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"BillingCity": {
+					"name": "BillingCity",
+					"type": "varchar(128)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"BillingState": {
+					"name": "BillingState",
+					"type": "varchar(32)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"npo02__MembershipJoinDate__c": {
+					"name": "npo02__MembershipJoinDate__c",
+					"type": "varchar(16)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"Website": {
+					"name": "Website",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"Industry_1__c": {
+					"name": "Industry_1__c",
+					"type": "varchar(64)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"Industry_2__c": {
+					"name": "Industry_2__c",
+					"type": "varchar(64)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"Industry_3__c": {
+					"name": "Industry_3__c",
+					"type": "varchar(64)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"Faith_org_type__c": {
+					"name": "Faith_org_type__c",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"Advocacy_org_type__c": {
+					"name": "Advocacy_org_type__c",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"Business_org_type__c": {
+					"name": "Business_org_type__c",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"Education_org_type__c": {
+					"name": "Education_org_type__c",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"Nonprofit_org_type__c": {
+					"name": "Nonprofit_org_type__c",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"Government_org_type__c": {
+					"name": "Government_org_type__c",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"Other_org_type__c": {
+					"name": "Other_org_type__c",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"County__c": {
+					"name": "County__c",
+					"type": "varchar(32)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"Region_2_0__c": {
+					"name": "Region_2_0__c",
+					"type": "varchar(32)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"Logo__c": {
+					"name": "Logo__c",
+					"type": "varchar(64)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"Logo_Last_Confirmed__c": {
+					"name": "Logo_Last_Confirmed__c",
+					"type": "varchar(64)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"TCM_Member__c": {
+					"name": "TCM_Member__c",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": false
+				}
+			},
+			"indexes": {
+				"name_idx": {
+					"name": "name_idx",
+					"columns": ["Name"],
+					"isUnique": false
+				},
+				"join_idx": {
+					"name": "join_idx",
+					"columns": ["npo02__MembershipJoinDate__c"],
+					"isUnique": false
+				}
+			},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {}
+		}
+	},
+	"enums": {},
+	"schemas": {},
+	"_meta": {
+		"schemas": {},
+		"tables": {},
+		"columns": {}
+	}
+}

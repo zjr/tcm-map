@@ -1,0 +1,1 @@
+ALTER TABLE "accounts" ADD COLUMN "TCM_Member__c" boolean;

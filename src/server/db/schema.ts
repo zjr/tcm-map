@@ -41,7 +41,9 @@ export const accounts = pgTable(
 		Region_2_0__c: varchar('Region_2_0__c', { length: 32 }),
 
 		Logo__c: varchar('Logo__c', { length: 64 }),
-		Logo_Last_Confirmed__c: varchar('Logo_Last_Confirmed__c', { length: 64 })
+		Logo_Last_Confirmed__c: varchar('Logo_Last_Confirmed__c', { length: 64 }),
+
+		TCM_Member__c: boolean('TCM_Member__c')
 	},
 	table => ({
 		nameIdxAsc: index('name_idx').on(table.Name).asc().nullsLast(),

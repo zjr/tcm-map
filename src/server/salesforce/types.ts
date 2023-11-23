@@ -18,6 +18,15 @@ export interface SfRecord {
 	};
 }
 
+export type SfOrgType =
+	| 'Faith_org_type__c'
+	| 'Advocacy_org_type__c'
+	| 'Business_org_type__c'
+	| 'Education_org_type__c'
+	| 'Nonprofit_org_type__c'
+	| 'Government_org_type__c'
+	| 'Other_org_type__c';
+
 export interface BareAccount extends SfRecord {
 	// ex: "0015G00001Uyc7lQAB"
 	Id: string;

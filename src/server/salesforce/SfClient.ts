@@ -1,7 +1,13 @@
 // noinspection SqlNoDataSourceInspection
 import 'dotenv/config';
 
+import { eq, like, and, inArray, or, asc, desc, AnyColumn } from 'drizzle-orm';
+
+import { db } from '../db/database';
+import { accounts } from '../db/schema';
+
 import type {
+	SfOrgType,
 	DetailAccount,
 	PartialAccount,
 	SfApiError,
@@ -187,22 +193,11 @@ export class SfClient {
 		);
 
 		const data = await this.queryFetcher<PartialAccount>(url);
-
 		return data.map(x => [x.Id, x.Name, x.BillingLatitude, x.BillingLongitude]);
 	}
 
-	async getTcmMemberDetails({
-		ids,
-		sort,
-		search,
-		filters
-	}: {
-		ids: string[];
-		sort?: string;
-		search: string;
-		filters: { [k in 'locations' | 'industries' | 'types']: string[] };
-	}) {
-		let query = `
+	async reseedDatabase() {
+		const query = `
 			SELECT
 				Id,
 				Name,
@@ -229,29 +224,53 @@ export class SfClient {
 			FROM
 				Account
 			WHERE
-				Id in ('${ids.join("', '")}')
+				TCM_Member__c = true and
+				IsDeleted <> true
 		`;
 
+		const url = this.getRestUrl('/query');
+		url.searchParams.set('q', query);
+
+		const data = await this.queryFetcher<DetailAccount>(url);
+
+		for (const account of data) {
+			await db.insert(accounts).values(account);
+		}
+	}
+
+	async getTcmMemberDetails({
+		ids,
+		sort,
+		search,
+		filters
+	}: {
+		ids: string[];
+		sort?: string;
+		search: string;
+		filters: { [k in 'locations' | 'industries' | 'types']: string[] };
+	}) {
+		const where = [];
+		const orderBy = [];
+
+		where.push(inArray(accounts.Id, ids));
+
 		if (search) {
-			query += `AND Name LIKE '%${search}%'`;
+			where.push(like(accounts.Name, `%${search}%`));
 		}
 
 		if (filters.industries.length) {
-			const industryList = filters.industries.join("', '");
-			query += `
-				AND (
-					Industry_1__c IN ('${industryList}') OR
-					Industry_2__c IN ('${industryList}') OR
-					Industry_3__c IN ('${industryList}')
+			where.push(
+				or(
+					inArray(accounts.Industry_1__c, filters.industries),
+					inArray(accounts.Industry_2__c, filters.industries),
+					inArray(accounts.Industry_3__c, filters.industries)
 				)
-			`;
+			);
 		}
 
 		if (filters.types.length) {
 			for (const type of filters.types) {
-				query += `
-					AND ${type} = true
-				`;
+				where.push(eq(accounts[type as SfOrgType], true));
 			}
 		}
 
@@ -267,27 +286,26 @@ export class SfClient {
 			}
 
 			if (locFilters.regions.length) {
-				query += `AND Region_2_0__c in ('${locFilters.regions.join("', '")}')`;
+				where.push(inArray(accounts.Region_2_0__c, locFilters.regions));
 			}
+
 			if (locFilters.counties.length) {
-				query += `AND County__c in ('${locFilters.counties.join("', '")}')`;
+				where.push(inArray(accounts.County__c, locFilters.counties));
 			}
 		}
 
 		if (sort) {
-			query += `
-				ORDER BY ${sort.split('#').join(' ')}
-			`;
+			const [field, direction] = sort.split('#');
+			const directionFn = direction === 'asc' ? asc : desc;
+			orderBy.push(directionFn({ name: field } as AnyColumn));
 		}
 
-		query += `
-			LIMIT 50
-		`;
-
-		const url = this.getRestUrl('/query');
-		url.searchParams.set('q', query);
-
-		return await this.queryFetcher<DetailAccount>(url);
+		return db
+			.select()
+			.from(accounts)
+			.where(and(...where))
+			.orderBy(...orderBy)
+			.limit(50);
 	}
 }
 

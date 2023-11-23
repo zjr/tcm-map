@@ -1,4 +1,4 @@
-import { css, html } from 'lit';
+import { css, html, nothing } from 'lit';
 import { provide } from '@lit/context';
 import { customElement, state } from 'lit/decorators.js';
 
@@ -88,6 +88,8 @@ export class TcmMap extends TwElement {
 	@state() members: DetailAccount[] = [];
 	@state() memberIds: string[] = [];
 
+	@state() initLoading: boolean = true;
+
 	async connectedCallback() {
 		super.connectedCallback();
 
@@ -95,6 +97,7 @@ export class TcmMap extends TwElement {
 			headers: { 'Content-Type': 'application/json' }
 		});
 
+		this.initLoading = false;
 		this.members = await res.json();
 	}
 
@@ -137,6 +140,7 @@ export class TcmMap extends TwElement {
 						@set-sort=${this.setSort.bind(this)}
 						@filter-event=${this.setFilters.bind(this)}
 					></filter-controls>
+					${this.initLoading ? html`<p>Loading…</p>` : nothing}
 					<members-list
 						class="h-full overflow-y-scroll"
 						.members=${this.members}

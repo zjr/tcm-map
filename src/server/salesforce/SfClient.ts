@@ -253,6 +253,17 @@ export class SfClient {
 		return data.map(x => [x.Id, x.Name, x.BillingLatitude, x.BillingLongitude]);
 	}
 
+	private getInitialStmt = db
+		.select()
+		.from(accounts)
+		.orderBy(asc(accounts.Name))
+		.limit(100)
+		.prepare('get_initial');
+
+	async getTcmMembersInitial() {
+		return this.getInitialStmt.execute();
+	}
+
 	async getTcmMemberDetails({
 		ids,
 		sort,

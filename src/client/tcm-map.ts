@@ -32,57 +32,11 @@ import './components/TypePill.ts';
  * - [x] search lists
  * - [x] style the google map's place pins
  * - [ ] affect map by filtering / searching (establish og list, filter it)
- * - [ ] add caching
- * - [ ] load initial set to replace `results` array
- * - [ ] prep for deployment
+ * - [x] add caching
+ * - [x] load initial set to replace `results` array
+ * - [x] prep for deployment
+ * - [ ] deploy
  */
-
-const results = [
-	{
-		Id: '',
-		Name: 'YMCA of the East Bay',
-		npo02__MembershipJoinDate__c: '2014-08-07',
-		Industry_1__c: 'Government & Public Sector',
-		Website: 'https://google.com',
-		BillingCity: 'Berkeley',
-		BillingState: 'CA'
-	},
-	{
-		Id: '',
-		Name: 'Urban Strategies Council',
-		npo02__MembershipJoinDate__c: '2012-08-07',
-		Industry_1__c: 'Faith-based Groups',
-		Website: 'https://google.com',
-		BillingCity: 'Oakland',
-		BillingState: 'CA'
-	},
-	{
-		Id: '',
-		Name: 'Game Theory Academy',
-		npo02__MembershipJoinDate__c: '2011-08-07',
-		Industry_1__c: 'Early Childhood',
-		BillingCity: 'Oakland',
-		BillingState: 'CA'
-	},
-	{
-		Id: '',
-		Name: 'San Francisco Unified School District',
-		npo02__MembershipJoinDate__c: '2019-08-07',
-		Industry_1__c: 'Other',
-		Website: 'https://google.com',
-		BillingCity: 'San Francisco',
-		BillingState: 'CA'
-	},
-	{
-		Id: '',
-		Name: 'Yolo CASA',
-		npo02__MembershipJoinDate__c: '2014-08-07',
-		Industry_1__c: 'Philanthropy',
-		Website: 'https://google.com',
-		BillingCity: 'Berkeley',
-		BillingState: 'CA'
-	}
-];
 
 /**
  * An example element.
@@ -131,8 +85,18 @@ export class TcmMap extends TwElement {
 		return await this.getMembers();
 	}
 
-	@state() members: DetailAccount[] = results;
+	@state() members: DetailAccount[] = [];
 	@state() memberIds: string[] = [];
+
+	async connectedCallback() {
+		super.connectedCallback();
+
+		const res = await fetch('http://localhost:3000/accounts/initial', {
+			headers: { 'Content-Type': 'application/json' }
+		});
+
+		this.members = await res.json();
+	}
 
 	private async getMembers(e?: CustomEvent<{ ids: string[] }>) {
 		if (e && !Array.isArray(e.detail.ids)) return;

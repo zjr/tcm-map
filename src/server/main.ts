@@ -28,6 +28,13 @@ app.get(
 	})
 );
 
+app.get(
+	'/accounts/initial',
+	asyncHandler(async (_, res) => {
+		res.json(await sfClient.getTcmMembersInitial());
+	})
+);
+
 app.post(
 	'/accounts/details',
 	asyncHandler(async (req, res) => {

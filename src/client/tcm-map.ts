@@ -32,7 +32,7 @@ import './components/TypePill.ts';
  * - [x] search lists
  * - [x] style the google map's place pins
  * - [x] affect map by filtering / searching (establish og list, filter it)
- * - [ ] move map to contain elements after filtering
+ * - [x] move map to contain elements after filtering
  * - [x] add caching
  * - [x] load initial set to replace `results` array
  * - [x] prep for deployment

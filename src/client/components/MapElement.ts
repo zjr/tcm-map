@@ -39,6 +39,7 @@ export default class MapElement extends LitElement {
 	private async makeMarkers(
 		data?: PinTuple[]
 	): Promise<AdvancedMarkerElement[]> {
+		let bounds: google.maps.LatLngBounds | undefined;
 		let markers;
 
 		if (data) {
@@ -51,7 +52,11 @@ export default class MapElement extends LitElement {
 				}
 			}));
 
+			bounds = new google.maps.LatLngBounds();
+
 			markers = locations.map(({ id, name, position }) => {
+				bounds!.extend(position);
+
 				const parser = new DOMParser();
 
 				// A marker with a custom inline SVG.
@@ -154,6 +159,8 @@ export default class MapElement extends LitElement {
 				}
 			});
 		}
+
+		if (bounds) this.map?.fitBounds(bounds);
 
 		return markers;
 	}

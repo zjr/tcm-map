@@ -279,6 +279,8 @@ export class SfClient {
 		const where = [];
 		const orderBy = [];
 
+		if (!ids?.length) return [];
+
 		where.push(inArray(accounts.Id, ids));
 
 		if (search) {

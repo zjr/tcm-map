@@ -1,7 +1,20 @@
 import { html, LitElement, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
-import { DetailAccount } from '../../server/salesforce/SfClient';
+import type { DetailAccount } from '../../server/salesforce/types';
+
+function sanitizeUrl(input?: string): string | undefined {
+	if (!input) return;
+
+	try {
+		const url = new URL(input);
+		return url.toString();
+	} catch {
+		return /^https?:\/\//.test(input)
+			? undefined
+			: sanitizeUrl('https://' + input);
+	}
+}
 
 @customElement('member-element')
 export default class MemberElement extends LitElement {
@@ -11,14 +24,15 @@ export default class MemberElement extends LitElement {
 	render() {
 		if (!this.member) return nothing;
 
-		let url = this.member.Website;
+		const memberLoc = [
+			this.member.BillingCity,
+			this.member.BillingState
+		].filter(Boolean);
+
+		const url = sanitizeUrl(this.member.Website);
 		let urlEl = null;
 
 		if (url) {
-			if (!URL.canParse(url) && URL.canParse('https://' + url)) {
-				url = 'https://' + url;
-			}
-
 			urlEl = [
 				' • ',
 				html`<a
@@ -62,7 +76,7 @@ export default class MemberElement extends LitElement {
 				</div>
 				<div class="flex flex-col items-end justify-between gap-3 pt-px">
 					<p class="w-max max-w-[20ch] text-right text-gray-600">
-						${this.member.BillingCity}, ${this.member.BillingState}
+						${memberLoc.length ? memberLoc.join(', ') : nothing}
 					</p>
 					<div class="flex flex-wrap justify-end gap-2">
 						${memberIndustryPills}

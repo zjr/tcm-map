@@ -36,18 +36,14 @@ export class SfClientError extends Error {
 export class SfClient {
 	host: string;
 	token: string;
-
 	restEndpoint: string;
 
-	authorized: Promise<void>;
+	private authorized: boolean = false;
 
 	constructor() {
 		this.host = process.env.SF_HOST || 'https://childrennow.my.salesforce.com';
 		this.token = '';
-
 		this.restEndpoint = '/services/data/v59.0';
-
-		this.authorized = this.authorize();
 	}
 
 	getUrl(pathname: string) {
@@ -97,6 +93,7 @@ export class SfClient {
 		}
 
 		this.token = json.access_token;
+		this.authorized = true;
 	}
 
 	async paginateQuery<T>(data: SfApiQueryResponse<T>): Promise<Array<T>> {
@@ -152,6 +149,8 @@ export class SfClient {
 		opts: RequestInit = this.standardRestOptions,
 		retries: number = 1
 	): Promise<T> {
+		if (!this.authorized) await this.authorize();
+
 		try {
 			const res = await fetch(url, opts);
 			return await this.resHandler<T>(res);
@@ -167,6 +166,8 @@ export class SfClient {
 		opts: RequestInit = this.standardRestOptions,
 		retries: number = 1
 	): Promise<Array<T>> {
+		if (!this.authorized) await this.authorize();
+
 		try {
 			const res = await fetch(url, opts);
 			const data = await this.resHandler<SfApiQueryResponse<T>>(res);

@@ -7,14 +7,13 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . ./
+
 RUN npm run db:migrate:run
-
-FROM install as build
-
-RUN npm run build
 
 CMD ["npm", "start"]
 
-FROM install as development
+FROM install as build
+RUN npm run build
 
+FROM install as development
 RUN npm i -g nodemon

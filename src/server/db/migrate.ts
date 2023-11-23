@@ -8,11 +8,11 @@ import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import * as schema from './schema';
 
 export const conn = postgres({ max: 1 });
-export const database = drizzle(conn, { schema });
+export const mgDb = drizzle(conn, { schema });
 
 async function run() {
-	return await migrate(database, {
-		migrationsFolder: path.join(__dirname, './drizzle/migrations')
+	return await migrate(mgDb, {
+		migrationsFolder: path.join(__dirname, '../../../', '.drizzle/migrations')
 	});
 }
 

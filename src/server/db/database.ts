@@ -6,4 +6,4 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import * as schema from './schema';
 
 export const conn = postgres();
-export const database = drizzle(conn, { schema });
+export const db = drizzle(conn, { schema });

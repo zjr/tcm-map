@@ -1,21 +1,20 @@
 # syntax=docker/dockerfile:1
 
-FROM node:20.9-alpine as build
+FROM node:20.9-alpine as install
 WORKDIR ./app
 
 COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . ./
+RUN npm run db:migrate:run
+
+FROM install as build
+
 RUN npm run build
 
 CMD ["npm", "start"]
 
-FROM build as migrate
-
-RUN npm run db:migrate:generate
-RUN npm run db:migrate:run
-
-FROM migrate as development
+FROM install as development
 
 RUN npm i -g nodemon

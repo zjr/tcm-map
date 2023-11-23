@@ -11,18 +11,25 @@ export default class MemberElement extends LitElement {
 	render() {
 		if (!this.member) return nothing;
 
-		const memberLink = this.member.Website
-			? [
-					' • ',
-					html`<a
-						target="_blank"
-						rel="noreferrer nofollow"
-						href=${this.member.Website}
-						class="text-tcmYellow-900 underline"
-						>Visit Website</a
-					>`
-			  ]
-			: null;
+		let url = this.member.Website;
+		let urlEl = null;
+
+		if (url) {
+			if (!URL.canParse(url) && URL.canParse('https://' + url)) {
+				url = 'https://' + url;
+			}
+
+			urlEl = [
+				' • ',
+				html`<a
+					target="_blank"
+					rel="noreferrer nofollow"
+					href=${url}
+					class="text-tcmYellow-900 underline"
+					>Visit Website</a
+				>`
+			];
+		}
 
 		const memberIndustryPills = [
 			this.member.Industry_1__c,
@@ -49,7 +56,7 @@ export default class MemberElement extends LitElement {
 										).getFullYear()}</span
 								  >`
 								: nothing}
-							${memberLink}
+							${urlEl}
 						</p>
 					</div>
 				</div>

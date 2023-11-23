@@ -1,3 +1,10 @@
+export type PinTuple = [
+	Id: string,
+	Name: string,
+	BillingLatitude: number,
+	BillingLongitude: number
+];
+
 export interface SfApiError {
 	error: string;
 	error_description: string;

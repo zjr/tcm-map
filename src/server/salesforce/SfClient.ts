@@ -7,6 +7,7 @@ import {
 	desc,
 	eq,
 	inArray,
+	InferInsertModel,
 	isNotNull,
 	like,
 	or,
@@ -18,6 +19,7 @@ import { accounts } from '../db/schema';
 
 import type {
 	DetailAccount,
+	PinTuple,
 	SfApiError,
 	SfApiOAuthResponse,
 	SfApiQueryResponse,
@@ -149,14 +151,17 @@ export class SfClient {
 		opts: RequestInit = this.standardRestOptions,
 		retries: number = 1
 	): Promise<T> {
-		if (!this.authorized) await this.authorize();
+		if (!this.authorized) {
+			await this.authorize(true);
+			return this.fetcher(url);
+		}
 
 		try {
 			const res = await fetch(url, opts);
 			return await this.resHandler<T>(res);
 		} catch (e) {
 			return await this.handleAuthRetry(e, retries, () =>
-				this.fetcher<T>(url, opts, --retries)
+				this.fetcher<T>(url, void 0, --retries)
 			);
 		}
 	}
@@ -166,7 +171,10 @@ export class SfClient {
 		opts: RequestInit = this.standardRestOptions,
 		retries: number = 1
 	): Promise<Array<T>> {
-		if (!this.authorized) await this.authorize();
+		if (!this.authorized) {
+			await this.authorize(true);
+			return this.queryFetcher(url);
+		}
 
 		try {
 			const res = await fetch(url, opts);
@@ -174,7 +182,7 @@ export class SfClient {
 			return await this.paginateQuery(data);
 		} catch (e) {
 			return await this.handleAuthRetry(e, retries, () =>
-				this.queryFetcher<T>(url, opts, --retries)
+				this.queryFetcher<T>(url, void 0, --retries)
 			);
 		}
 	}
@@ -232,13 +240,15 @@ export class SfClient {
 		}
 	}
 
+	private pinsSelect = {
+		Id: accounts.Id,
+		Name: accounts.Name,
+		BillingLatitude: accounts.BillingLatitude,
+		BillingLongitude: accounts.BillingLongitude
+	};
+
 	private getMembersFullStmt = db
-		.select({
-			Id: accounts.Id,
-			Name: accounts.Name,
-			BillingLatitude: accounts.BillingLatitude,
-			BillingLongitude: accounts.BillingLongitude
-		})
+		.select(this.pinsSelect)
 		.from(accounts)
 		.where(
 			and(
@@ -249,9 +259,19 @@ export class SfClient {
 		)
 		.prepare('get_members_full');
 
+	private compressPins(data: InferInsertModel<typeof accounts>[]): PinTuple[] {
+		return data
+			.filter(x => {
+				return x.Id && x.Name && x.BillingLatitude && x.BillingLongitude;
+			})
+			.map(
+				x => [x.Id, x.Name, x.BillingLatitude, x.BillingLongitude] as PinTuple
+			);
+	}
+
 	async getTcmMembersFull() {
 		const data = await this.getMembersFullStmt.execute();
-		return data.map(x => [x.Id, x.Name, x.BillingLatitude, x.BillingLongitude]);
+		return this.compressPins(data);
 	}
 
 	private getInitialStmt = db
@@ -279,9 +299,11 @@ export class SfClient {
 		const where = [];
 		const orderBy = [];
 
-		if (!ids?.length) return [];
+		let whereIds;
 
-		where.push(inArray(accounts.Id, ids));
+		if (ids?.length) {
+			whereIds = inArray(accounts.Id, ids);
+		}
 
 		if (search) {
 			where.push(like(accounts.Name, `%${search}%`));
@@ -329,12 +351,22 @@ export class SfClient {
 			orderBy.push(directionFn(sql.raw(`"${field}"`)));
 		}
 
-		return db
+		const full = await db
 			.select()
 			.from(accounts)
-			.where(and(...where))
+			.where(and(whereIds, ...where))
 			.orderBy(...orderBy)
 			.limit(50);
+
+		const pins = where.length
+			? await db
+					.select(this.pinsSelect)
+					.from(accounts)
+					.where(and(...where))
+					.orderBy(...orderBy)
+			: [];
+
+		return { full, pins: this.compressPins(pins) };
 	}
 }
 

@@ -36,7 +36,7 @@ app.get(
 );
 
 app.post(
-	'/accounts/details',
+	'/accounts/filtered',
 	asyncHandler(async (req, res) => {
 		res.json(await sfClient.getTcmMemberDetails(req.body));
 	})

@@ -6,7 +6,7 @@ import debounce from 'lodash-es/debounce';
 
 import FilterEvent from './events/FilterEvent';
 import { TwElement } from './components/shared/tailwind.element';
-import { DetailAccount } from '../server/salesforce/types';
+import { DetailAccount, PinTuple } from '../server/salesforce/types';
 import { FiltersContext, filtersContext } from './contexts/filtersContext';
 
 import './components/SearchControl.ts';
@@ -31,10 +31,12 @@ import './components/TypePill.ts';
  * - [x] filter with locations
  * - [x] search lists
  * - [x] style the google map's place pins
- * - [ ] affect map by filtering / searching (establish og list, filter it)
+ * - [x] affect map by filtering / searching (establish og list, filter it)
+ * - [ ] move map to contain elements after filtering
  * - [x] add caching
  * - [x] load initial set to replace `results` array
  * - [x] prep for deployment
+ * - [ ] replace api call locations with some env defined host
  * - [ ] deploy
  */
 
@@ -87,6 +89,7 @@ export class TcmMap extends TwElement {
 
 	@state() members: DetailAccount[] = [];
 	@state() memberIds: string[] = [];
+	@state() filteredPins: PinTuple[] = [];
 
 	@state() initLoading: boolean = true;
 
@@ -108,7 +111,7 @@ export class TcmMap extends TwElement {
 			this.memberIds = e.detail.ids;
 		}
 
-		const res = await fetch('http://localhost:3000/accounts/details', {
+		const res = await fetch('http://localhost:3000/accounts/filtered', {
 			method: 'post',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(
@@ -122,7 +125,10 @@ export class TcmMap extends TwElement {
 			)
 		});
 
-		this.members = await res.json();
+		const { full, pins } = await res.json();
+
+		this.members = full;
+		this.filteredPins = pins;
 	}
 
 	render() {
@@ -148,6 +154,7 @@ export class TcmMap extends TwElement {
 				</div>
 				<map-element
 					class="flex-grow"
+					.filteredPins=${this.filteredPins}
 					@bounds-change=${this.getMembers.bind(this)}
 				></map-element>
 			</div>

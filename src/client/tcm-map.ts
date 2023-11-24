@@ -129,8 +129,16 @@ export class TcmMap extends TwElement {
 
 		const { full, pins } = await res.json();
 
+		// TODO: need to unset the map lock with full is empty
+		// TODO: maybe should send geo coords now instead of IDs
+
 		this.members = full;
-		this.filteredPins = pins;
+
+		// only unset pins if there's no full because api doesn't bother to
+		// resend full array--we should have it already.
+		if (pins.length || !full.length) {
+			this.filteredPins = pins;
+		}
 	}
 
 	render() {

@@ -39,8 +39,11 @@ export default class MapElement extends LitElement {
 	@property() filteredPins: PinTuple[] | undefined;
 
 	private async getNewResults(markers: AMElement[]) {
+		if (this.autoPanning) return;
+
 		const ids = [];
 
+		// TODO: this could tell the map to unlock if there's no IDs?
 		for (let i = 0; i < markers.length && ids.length < 500; i++) {
 			if (this.map!.getBounds()?.contains(markers[i].position!)) {
 				ids.push(markers[i].getAttribute('data-id'));
@@ -108,17 +111,10 @@ export default class MapElement extends LitElement {
 		return marker;
 	}
 
-	private async makeMarkers(data?: PinTuple[]): Promise<AMElement[]> {
-		let bounds: google.maps.LatLngBounds | undefined;
-		let markers;
-
-		if (data) {
-			const locations = data.map(this.mapDatumToLocation);
-			bounds = new google.maps.LatLngBounds();
-			markers = locations.map(this.makeMarker.bind(this, bounds));
-		} else {
-			markers = this.allMarkers;
-		}
+	private async makeMarkers(data: PinTuple[]): Promise<AMElement[]> {
+		const locations = data.map(this.mapDatumToLocation);
+		const bounds = new google.maps.LatLngBounds();
+		const markers = locations.map(this.makeMarker.bind(this, bounds));
 
 		if (this.markerCluster) {
 			this.markerCluster.clearMarkers();
@@ -183,10 +179,11 @@ export default class MapElement extends LitElement {
 	async willUpdate(changedProperties: PropertyValues<this>) {
 		if (!changedProperties.has('filteredPins') || !this.map) return;
 
-		if (!this.filteredPins || this.filteredPins.length <= 0) {
-			await this.makeMarkers();
-		} else {
+		if (this.filteredPins && this.filteredPins.length > 0) {
 			await this.makeMarkers(this.filteredPins);
+		} else {
+			console.log(this.filteredPins, this.filteredPins?.length);
+			this.markerCluster?.clearMarkers();
 		}
 	}
 

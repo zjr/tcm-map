@@ -300,7 +300,6 @@ export class SfClient {
 		const orderBy = [];
 
 		let whereIds;
-
 		if (ids?.length) {
 			whereIds = inArray(accounts.Id, ids);
 		}

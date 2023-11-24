@@ -25,6 +25,10 @@ export default class MapElement extends LitElement {
 	mapRef: Ref<HTMLDivElement> = createRef();
 
 	@state() map: google.maps.Map | undefined = undefined;
+
+	@state() mapLocked: boolean = false;
+	@state() autoPanning: boolean = false;
+
 	@state() allMarkers: AMElement[] = [];
 	@state() markerCluster: MarkerClusterer | undefined = undefined;
 	@state() infoWindow: google.maps.InfoWindow | undefined = undefined;
@@ -123,9 +127,22 @@ export default class MapElement extends LitElement {
 			this.markerCluster = await this.makeClusterer(markers);
 		}
 
-		if (bounds) this.map?.fitBounds(bounds);
+		if (bounds && !this.mapLocked) {
+			this.autoPanning = true; // so we don't lock map
+
+			this.map?.fitBounds(bounds);
+
+			const idleListener = this.map?.addListener('idle', () => {
+				this.autoPanning = false;
+				idleListener?.remove();
+			});
+		}
 
 		return markers;
+	}
+
+	private setMapLocked(lock: boolean = true) {
+		if (!this.autoPanning) this.mapLocked = lock;
 	}
 
 	protected async firstUpdated(_changedProperties: PropertyValues) {
@@ -143,7 +160,8 @@ export default class MapElement extends LitElement {
 		this.map = new Map(this.mapRef.value!, {
 			mapId: 'tcm-map',
 			zoom: 6,
-			center: { lat: 37, lng: -119 }
+			center: { lat: 37, lng: -119 },
+			gestureHandling: 'cooperative'
 		});
 
 		this.infoWindow = new InfoWindow({ content: '', disableAutoPan: true });
@@ -151,6 +169,10 @@ export default class MapElement extends LitElement {
 		const res = await fetch('http://localhost:3000/accounts');
 		const data = (await res.json()) as PinTuple[];
 		this.allMarkers = await this.makeMarkers(data);
+
+		// lock the map on user input, until they filter out all the markers
+		this.map.addListener('drag', this.setMapLocked.bind(this));
+		this.map.addListener('zoom_changed', this.setMapLocked.bind(this));
 
 		this.map.addListener(
 			'bounds_changed',
@@ -170,7 +192,7 @@ export default class MapElement extends LitElement {
 
 	render() {
 		return html`
-			<div class="h-full w-full" id="map" ${ref(this.mapRef)}></div>
+			<div id="map" class="h-full w-full" ${ref(this.mapRef)}></div>
 			<div id="mapPin"></div>
 		`;
 	}

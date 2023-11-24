@@ -36,7 +36,9 @@ import './components/TypePill.ts';
  * - [x] add caching
  * - [x] load initial set to replace `results` array
  * - [x] prep for deployment
- * - [ ] replace api call locations with some env defined host
+ * - [ ] map jerks you around after it's been bounded
+ * - [ ] map doesn't include all the items that it should in full after filter
+ * - [ ] replace api call locations with some env defined host, see: https://vitejs.dev/guide/build.html#public-base-path
  * - [ ] deploy
  */
 

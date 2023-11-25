@@ -1,10 +1,12 @@
 import { css, html, nothing } from 'lit';
 import { provide } from '@lit/context';
 import { customElement, state } from 'lit/decorators.js';
+import { ref, Ref, createRef } from 'lit/directives/ref.js';
 
 import debounce from 'lodash-es/debounce';
 
 import FilterEvent from './events/FilterEvent';
+import MapElement from './components/MapElement';
 import { TwElement } from './components/shared/tailwind.element';
 import { DetailAccount, PinTuple } from '../server/salesforce/types';
 import { FiltersContext, filtersContext } from './contexts/filtersContext';
@@ -37,8 +39,8 @@ import './components/TypePill.ts';
  * - [x] load initial set to replace `results` array
  * - [x] prep for deployment
  * - [x] map jerks you around after it's been bounded
- * - [-] map doesn't include all the items that it should in full after filter
- * - [ ] move map out if you filter w/o points in view
+ * - [x] map doesn't include all the items that it should in full after filter
+ * - [x] move map out if you filter w/o points in view
  * - [ ] mobile UI
  * - [ ] add pagination
  * - [ ] add some basic credential for reseed
@@ -97,6 +99,7 @@ export class TcmMap extends TwElement {
 	@state() members: DetailAccount[] = [];
 	@state() memberIds: string[] = [];
 	@state() filteredPins: PinTuple[] = [];
+	@state() bounds: google.maps.LatLngBounds | undefined;
 
 	@state() initLoading: boolean = true;
 
@@ -115,13 +118,15 @@ export class TcmMap extends TwElement {
 		e?: CustomEvent<{ bounds: google.maps.LatLngBounds }> | null,
 		newPins: boolean = false
 	) {
+		if (e?.detail.bounds) this.bounds = e.detail.bounds;
+
 		const res = await fetch('http://localhost:3000/accounts/filtered', {
 			method: 'post',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(
 				{
 					newPins,
-					bounds: e?.detail.bounds,
+					bounds: this.bounds,
 					sort: this.sort,
 					search: this.search,
 					filters: this.filters
@@ -132,17 +137,22 @@ export class TcmMap extends TwElement {
 
 		const { full, pins } = await res.json();
 
-		// TODO: need to unset the map lock with full is empty
-		// TODO: maybe should send geo coords now instead of IDs
-
 		this.members = full;
+		if (newPins) this.filteredPins = pins;
 
-		// only unset pins if there's no full because api doesn't bother to
-		// resend full array--we should have it already.
-		if (pins?.length || !full.length) {
-			this.filteredPins = pins;
+		// no members in map bounds, but there are pins: rebound map;
+		// but don't if running because of bounds update (i.e., user input)
+		if (
+			!this.members?.length &&
+			this.filteredPins.length &&
+			!e?.detail.bounds
+		) {
+			this.bounds = undefined;
+			this.mapRef.value?.unlockAndReBound(this.filteredPins);
 		}
 	}
+
+	mapRef: Ref<MapElement> = createRef();
 
 	render() {
 		return html`
@@ -166,9 +176,10 @@ export class TcmMap extends TwElement {
 					></members-list>
 				</div>
 				<map-element
-					class="flex-grow"
+					${ref(this.mapRef)}
 					.filteredPins=${this.filteredPins}
 					@bounds-change=${this.getMembers.bind(this)}
+					class="flex-grow"
 				></map-element>
 			</div>
 		`;

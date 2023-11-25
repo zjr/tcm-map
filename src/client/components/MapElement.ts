@@ -110,6 +110,7 @@ export default class MapElement extends LitElement {
 		const bounds = new google.maps.LatLngBounds();
 		const markers = locations.map(this.makeMarker.bind(this, bounds));
 
+		// TODO: use a Set here?
 		if (this.markerCluster) {
 			this.markerCluster.clearMarkers();
 			this.markerCluster.addMarkers(markers);
@@ -177,9 +178,27 @@ export default class MapElement extends LitElement {
 		if (this.filteredPins && this.filteredPins.length > 0) {
 			await this.makeMarkers(this.filteredPins);
 		} else {
-			console.log(this.filteredPins, this.filteredPins?.length);
 			this.markerCluster?.clearMarkers();
 		}
+	}
+
+	public unlockAndReBound(pins: PinTuple[]) {
+		if (!pins?.length) return;
+
+		this.mapLocked = false;
+		const bounds = new google.maps.LatLngBounds();
+
+		for (const [, , lat, lng] of pins) {
+			bounds.extend({ lat, lng });
+		}
+
+		// todo: duplicate, refactor
+		this.autoPanning = true; // so we don't lock map
+		this.map?.fitBounds(bounds);
+		const idleListener = this.map?.addListener('idle', () => {
+			this.autoPanning = false;
+			idleListener?.remove();
+		});
 	}
 
 	render() {

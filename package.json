@@ -11,7 +11,7 @@
 		"release": "standard-version",
 		"h:pre-commit": "lint-staged",
 		"db:migrate": "npm run db:migrate:generate && npm run db:migrate:run",
-		"db:migrate:docker": "docker compose -f compose.migrate.yaml up --abort-on-container-exit",
+		"db:migrate:docker": "docker compose -f compose.migrate.yaml up --build --abort-on-container-exit",
 		"db:migrate:generate": "drizzle-kit generate:pg",
 		"db:migrate:run": "tsx src/server/db/migrate.ts"
 	},

@@ -1,3 +1,5 @@
+import { Point } from '../db/schema';
+
 export type PinTuple = [
 	Id: string,
 	Name: string,
@@ -49,6 +51,9 @@ export interface PartialAccount extends BareAccount {
 }
 
 export interface DetailAccount extends BareAccount {
+	coords?: Point;
+	BillingLatitude?: number;
+	BillingLongitude?: number;
 	BillingCity?: string;
 	BillingState?: string;
 	Website?: string;

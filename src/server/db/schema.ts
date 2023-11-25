@@ -1,11 +1,32 @@
+import { sql } from 'drizzle-orm';
 import { index } from 'drizzle-orm/pg-core/indexes';
 import {
 	pgTable,
 	varchar,
 	doublePrecision,
 	text,
-	boolean
+	boolean,
+	customType
 } from 'drizzle-orm/pg-core';
+
+export interface Point {
+	lat: number;
+	lng: number;
+}
+
+const pointType = customType<{ data: Point; driverData: string }>({
+	dataType() {
+		return 'geometry(POINT,4326)';
+	},
+	toDriver(value: Point): string {
+		return `SRID=4326;POINT(${value.lng} ${value.lat})`;
+	},
+	fromDriver(value): Point {
+		const matches = value.match(/POINT\((?<lng>[\d.-]+) (?<lat>[\d.-]+)\)/);
+		const { lat, lng } = matches?.groups ?? {};
+		return { lat: parseFloat(String(lat)), lng: parseFloat(String(lng)) };
+	}
+});
 
 export const accounts = pgTable(
 	'accounts',
@@ -17,6 +38,8 @@ export const accounts = pgTable(
 
 		BillingCity: varchar('BillingCity', { length: 128 }),
 		BillingState: varchar('BillingState', { length: 32 }),
+
+		coords: pointType('coords'),
 
 		npo02__MembershipJoinDate__c: varchar('npo02__MembershipJoinDate__c', {
 			length: 16
@@ -55,6 +78,9 @@ export const accounts = pgTable(
 		joinDateIdxDesc: index('join_idx')
 			.on(table.npo02__MembershipJoinDate__c)
 			.desc()
-			.nullsLast()
+			.nullsLast(),
+		coordsIndex: index('coords_idx')
+			.on(table.coords)
+			.using(sql`GIST`)
 	})
 );

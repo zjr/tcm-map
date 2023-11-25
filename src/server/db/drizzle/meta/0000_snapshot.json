@@ -1,5 +1,5 @@
 {
-	"id": "26565c39-df66-4667-9844-c6fab085e047",
+	"id": "3265fee5-2131-418c-bf3a-eff86b8ecabe",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"version": "5",
 	"dialect": "pg",
@@ -41,6 +41,12 @@
 				"BillingState": {
 					"name": "BillingState",
 					"type": "varchar(32)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"coords": {
+					"name": "coords",
+					"type": "geometry(POINT,4326)",
 					"primaryKey": false,
 					"notNull": false
 				},
@@ -139,6 +145,12 @@
 					"type": "varchar(64)",
 					"primaryKey": false,
 					"notNull": false
+				},
+				"TCM_Member__c": {
+					"name": "TCM_Member__c",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": false
 				}
 			},
 			"indexes": {
@@ -150,6 +162,11 @@
 				"join_idx": {
 					"name": "join_idx",
 					"columns": ["npo02__MembershipJoinDate__c"],
+					"isUnique": false
+				},
+				"coords_idx": {
+					"name": "coords_idx",
+					"columns": ["coords"],
 					"isUnique": false
 				}
 			},

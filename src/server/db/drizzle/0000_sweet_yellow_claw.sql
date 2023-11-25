@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS "accounts" (
 	"BillingLongitude" double precision,
 	"BillingCity" varchar(128),
 	"BillingState" varchar(32),
+	"coords" geometry(POINT,4326),
 	"npo02__MembershipJoinDate__c" varchar(16),
 	"Website" text,
 	"Industry_1__c" varchar(64),
@@ -20,8 +21,10 @@ CREATE TABLE IF NOT EXISTS "accounts" (
 	"County__c" varchar(32),
 	"Region_2_0__c" varchar(32),
 	"Logo__c" varchar(64),
-	"Logo_Last_Confirmed__c" varchar(64)
+	"Logo_Last_Confirmed__c" varchar(64),
+	"TCM_Member__c" boolean
 );
 --> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "name_idx" ON "accounts" ("Name");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "join_idx" ON "accounts" ("npo02__MembershipJoinDate__c");
+CREATE INDEX IF NOT EXISTS "join_idx" ON "accounts" ("npo02__MembershipJoinDate__c");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "coords_idx" ON "accounts" USING GIST ("coords");

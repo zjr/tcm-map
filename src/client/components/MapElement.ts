@@ -29,7 +29,6 @@ export default class MapElement extends LitElement {
 	@state() mapLocked: boolean = false;
 	@state() autoPanning: boolean = false;
 
-	@state() allMarkers: AMElement[] = [];
 	@state() markerCluster: MarkerClusterer | undefined = undefined;
 	@state() infoWindow: google.maps.InfoWindow | undefined = undefined;
 	@state() AMElement:
@@ -38,19 +37,14 @@ export default class MapElement extends LitElement {
 
 	@property() filteredPins: PinTuple[] | undefined;
 
-	private async getNewResults(markers: AMElement[]) {
+	private async getNewResults() {
 		if (this.autoPanning) return;
 
-		const ids = [];
-
-		// TODO: this could tell the map to unlock if there's no IDs?
-		for (let i = 0; i < markers.length && ids.length < 500; i++) {
-			if (this.map!.getBounds()?.contains(markers[i].position!)) {
-				ids.push(markers[i].getAttribute('data-id'));
-			}
-		}
-
-		this.dispatchEvent(new CustomEvent('bounds-change', { detail: { ids } }));
+		this.dispatchEvent(
+			new CustomEvent('bounds-change', {
+				detail: { bounds: this.map?.getBounds() }
+			})
+		);
 	}
 
 	private async makeClusterer(markers: AMElement[]): Promise<MarkerClusterer> {
@@ -164,7 +158,8 @@ export default class MapElement extends LitElement {
 
 		const res = await fetch('http://localhost:3000/accounts');
 		const data = (await res.json()) as PinTuple[];
-		this.allMarkers = await this.makeMarkers(data);
+
+		await this.makeMarkers(data);
 
 		// lock the map on user input, until they filter out all the markers
 		this.map.addListener('drag', this.setMapLocked.bind(this));
@@ -172,7 +167,7 @@ export default class MapElement extends LitElement {
 
 		this.map.addListener(
 			'bounds_changed',
-			debounce(this.getNewResults.bind(this, this.allMarkers), 350)
+			debounce(this.getNewResults.bind(this), 350)
 		);
 	}
 

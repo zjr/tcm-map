@@ -13,7 +13,7 @@ export const mgDb = drizzle(conn, { schema });
 
 async function run() {
 	return await migrate(mgDb, {
-		migrationsFolder: path.join(__dirname, 'drizzle/migrations')
+		migrationsFolder: path.join(__dirname, 'drizzle')
 	});
 }
 

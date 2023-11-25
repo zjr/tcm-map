@@ -36,10 +36,15 @@ import './components/TypePill.ts';
  * - [x] add caching
  * - [x] load initial set to replace `results` array
  * - [x] prep for deployment
- * - [ ] map jerks you around after it's been bounded
- * - [ ] map doesn't include all the items that it should in full after filter
+ * - [x] map jerks you around after it's been bounded
+ * - [-] map doesn't include all the items that it should in full after filter
+ * - [ ] move map out if you filter w/o points in view
+ * - [ ] mobile UI
+ * - [ ] add pagination
+ * - [ ] add some basic credential for reseed
  * - [ ] replace api call locations with some env defined host, see: https://vitejs.dev/guide/build.html#public-base-path
  * - [ ] deploy
+ * - [ ] trigger reseed on cron
  */
 
 /**
@@ -106,19 +111,15 @@ export class TcmMap extends TwElement {
 		this.members = await res.json();
 	}
 
-	private async getMembers(e?: CustomEvent<{ ids: string[] }>) {
-		if (e && !Array.isArray(e.detail.ids)) return;
-
-		if (e?.detail?.ids) {
-			this.memberIds = e.detail.ids;
-		}
-
+	private async getMembers(
+		e?: CustomEvent<{ bounds: google.maps.LatLngBounds }>
+	) {
 		const res = await fetch('http://localhost:3000/accounts/filtered', {
 			method: 'post',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(
 				{
-					ids: this.memberIds,
+					bounds: e?.detail.bounds,
 					sort: this.sort,
 					filters: this.filters,
 					search: this.search

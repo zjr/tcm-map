@@ -233,6 +233,14 @@ export class SfClient {
 
 		for (const account of data) {
 			delete account.attributes;
+
+			if (account.BillingLatitude && account.BillingLongitude) {
+				account.coords = {
+					lat: account.BillingLatitude,
+					lng: account.BillingLongitude
+				};
+			}
+
 			await db.insert(accounts).values(account).onConflictDoUpdate({
 				target: accounts.Id,
 				set: account
@@ -289,15 +297,27 @@ export class SfClient {
 		ids,
 		sort,
 		search,
-		filters
+		filters,
+		bounds
 	}: {
 		ids: string[];
 		sort?: string;
 		search: string;
 		filters: { [k in 'locations' | 'industries' | 'types']: string[] };
+		bounds: { south: number; west: number; north: number; east: number };
 	}) {
 		const where = [];
 		const orderBy = [];
+
+		if (bounds && bounds.east < 180) {
+			const boundsX = [bounds.east, bounds.west];
+			const boundsY = [bounds.north, bounds.south];
+
+			where.push(sql`coords @ ST_MakeEnvelope(
+				${Math.min(...boundsX)}, ${Math.min(...boundsY)},
+				${Math.max(...boundsX)}, ${Math.max(...boundsY)},
+			4326)`);
+		}
 
 		let whereIds;
 		if (ids?.length) {

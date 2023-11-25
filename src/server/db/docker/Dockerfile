@@ -9,8 +9,6 @@ RUN npm install
 COPY src/server/db ./
 COPY .env.vault ./
 
-RUN npx drizzle-kit generate:pg
-
 RUN <<EOF
 apt update
 apt --assume-yes install postgresql-client

@@ -92,18 +92,15 @@ export default class ActiveFilters extends TwElement {
 
 		return html`
 			<div class="bg-gray-100">
-				<div class="mx-auto px-4 py-3 sm:flex sm:items-center sm:px-6 lg:px-8">
+				<div class="mx-auto flex items-center px-4 py-3 sm:px-6 lg:px-8">
 					<h3 class="text-sm font-medium text-gray-500">
+						<span class="sr-only">Active </span>
 						Filters
-						<span class="sr-only">, active</span>
 					</h3>
 
-					<div
-						aria-hidden="true"
-						class="hidden h-5 w-px bg-gray-300 sm:ml-4 sm:block"
-					></div>
+					<div aria-hidden="true" class="ml-4 block h-5 w-px bg-gray-300"></div>
 
-					<div class="mt-2 sm:ml-4 sm:mt-0">
+					<div class="ml-4 mt-0">
 						<div class="-m-1 flex flex-wrap items-center">
 							${activeFilters?.length
 								? activeFilters.map(f => this.renderFilterButton(f))

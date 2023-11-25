@@ -1,17 +1,38 @@
-import { customElement } from 'lit/decorators.js';
+import { customElement, property } from 'lit/decorators.js';
 import { TwElement } from './shared/tailwind.element';
 import { html } from 'lit';
 
 @customElement('filter-dialog-mobile')
 export default class FilterDialogMobile extends TwElement {
+	@property({ type: Boolean })
+	open: boolean = false;
+
 	render() {
+		const containerClasses = [
+			'relative z-40 sm:hidden',
+			this.open ? '' : 'hidden'
+		].join(' ');
+
+		const menuBackdropClasses = [
+			'fixed inset-0 bg-black bg-opacity-25',
+			'transition-opacity ease-linear duration-300',
+			this.open ? 'opacity-100' : 'opacity-0'
+		].join(' ');
+
+		const menuClasses = [
+			'relative ml-auto flex h-full w-full max-w-xs flex-col',
+			'overscroll-y-auto bg-white py-4 pb-12 shadow-xl',
+			'transition ease-in-out duration-300 transform',
+			this.open ? 'translate-x-0' : 'translate-x-full'
+		].join(' ');
+
 		return html`
 			<!--
 				Mobile filter dialog
 
 				Off-canvas filters for mobile, show/hide based on off-canvas filters state.
 			-->
-			<div class="relative z-40 sm:hidden" role="dialog" aria-modal="true">
+			<div class=${containerClasses} role="dialog" aria-modal="true">
 				<!--
 					Off-canvas menu backdrop, show/hide based on off-canvas menu state.
 
@@ -22,7 +43,7 @@ export default class FilterDialogMobile extends TwElement {
 						From: "opacity-100"
 						To: "opacity-0"
 				-->
-				<div class="fixed inset-0 bg-black bg-opacity-25"></div>
+				<div class=${menuBackdropClasses}></div>
 
 				<div class="fixed inset-0 z-40 flex">
 					<!--
@@ -35,9 +56,7 @@ export default class FilterDialogMobile extends TwElement {
 							From: "translate-x-0"
 							To: "translate-x-full"
 					-->
-					<div
-						class="relative ml-auto flex h-full w-full max-w-xs flex-col overflow-y-auto bg-white py-4 pb-12 shadow-xl"
-					>
+					<div class=${menuClasses}>
 						<div class="flex items-center justify-between px-4">
 							<h2 class="text-lg font-medium text-gray-900">Filters</h2>
 							<button

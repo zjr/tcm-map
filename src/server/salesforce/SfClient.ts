@@ -6,10 +6,10 @@ import {
 	asc,
 	desc,
 	eq,
+	ilike,
 	inArray,
 	InferInsertModel,
 	isNotNull,
-	like,
 	or,
 	sql
 } from 'drizzle-orm';
@@ -315,7 +315,7 @@ export class SfClient {
 		}
 
 		if (search) {
-			where.push(like(accounts.Name, `%${search}%`));
+			where.push(ilike(accounts.Name, `%${search}%`));
 		}
 
 		if (filters.industries.length) {

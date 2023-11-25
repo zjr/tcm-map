@@ -62,7 +62,11 @@ export class TcmMap extends TwElement {
 		css`
 			:host {
 				display: block;
-				height: 66vh;
+				@media (min-width: 1024px) {
+					& {
+						height: 66vh;
+					}
+				}
 			}
 		`
 	];
@@ -156,9 +160,12 @@ export class TcmMap extends TwElement {
 
 	render() {
 		return html`
-			<div id="root" class="flex h-full flex-row overflow-hidden">
+			<div
+				id="root"
+				class="flex h-[120vh] flex-col-reverse overflow-hidden lg:h-full lg:flex-row"
+			>
 				<div
-					class="z-10 flex w-full flex-col bg-white font-sans shadow-2xl sm:w-[32rem]"
+					class="z-10 flex h-1/2 w-full flex-col bg-white font-sans shadow-2xl lg:h-full lg:w-[32rem]"
 				>
 					<search-control
 						@set-search=${debounce(this.setSearch.bind(this), 350)}
@@ -179,7 +186,7 @@ export class TcmMap extends TwElement {
 					${ref(this.mapRef)}
 					.filteredPins=${this.filteredPins}
 					@bounds-change=${this.getMembers.bind(this)}
-					class="flex-grow"
+					class="h-[50vh] flex-grow lg:h-full"
 				></map-element>
 			</div>
 		`;

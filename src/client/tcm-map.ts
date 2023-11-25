@@ -76,7 +76,7 @@ export class TcmMap extends TwElement {
 		if (Object.keys(this.filters).includes(key)) {
 			this.filters[key as keyof FiltersContext][del ? 'delete' : 'add'](val);
 			this.filters = { ...this.filters };
-			return await this.getMembers();
+			return await this.getMembers(null, true);
 		}
 	}
 
@@ -84,14 +84,14 @@ export class TcmMap extends TwElement {
 
 	private async setSearch(e: CustomEvent<string>) {
 		this.search = e.detail;
-		return await this.getMembers();
+		return await this.getMembers(null, true);
 	}
 
 	@state() sort: string = 'Name#ASC';
 
 	private async setSort(e: CustomEvent<string>) {
 		this.sort = e.detail;
-		return await this.getMembers();
+		return await this.getMembers(null, true);
 	}
 
 	@state() members: DetailAccount[] = [];
@@ -112,17 +112,19 @@ export class TcmMap extends TwElement {
 	}
 
 	private async getMembers(
-		e?: CustomEvent<{ bounds: google.maps.LatLngBounds }>
+		e?: CustomEvent<{ bounds: google.maps.LatLngBounds }> | null,
+		newPins: boolean = false
 	) {
 		const res = await fetch('http://localhost:3000/accounts/filtered', {
 			method: 'post',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(
 				{
+					newPins,
 					bounds: e?.detail.bounds,
 					sort: this.sort,
-					filters: this.filters,
-					search: this.search
+					search: this.search,
+					filters: this.filters
 				},
 				(_, v) => (v instanceof Set ? [...v] : v)
 			)
@@ -137,7 +139,7 @@ export class TcmMap extends TwElement {
 
 		// only unset pins if there's no full because api doesn't bother to
 		// resend full array--we should have it already.
-		if (pins.length || !full.length) {
+		if (pins?.length || !full.length) {
 			this.filteredPins = pins;
 		}
 	}

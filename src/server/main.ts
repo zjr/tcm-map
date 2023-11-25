@@ -24,7 +24,7 @@ app.get('/hello', (_, res) => res.send('Howdy!'));
 app.get(
 	'/accounts',
 	asyncHandler(async (_, res) => {
-		res.json(await sfClient.getTcmMembersFull());
+		res.json(await sfClient.getPinsFull());
 	})
 );
 

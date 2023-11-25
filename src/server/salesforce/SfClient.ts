@@ -255,16 +255,10 @@ export class SfClient {
 		BillingLongitude: accounts.BillingLongitude
 	};
 
-	private getMembersFullStmt = db
+	private getFullPinsStmt = db
 		.select(this.pinsSelect)
 		.from(accounts)
-		.where(
-			and(
-				eq(accounts.TCM_Member__c, true),
-				isNotNull(accounts.BillingLatitude),
-				isNotNull(accounts.BillingLongitude)
-			)
-		)
+		.where(and(eq(accounts.TCM_Member__c, true), isNotNull(accounts.coords)))
 		.prepare('get_members_full');
 
 	private compressPins(data: InferInsertModel<typeof accounts>[]): PinTuple[] {
@@ -277,8 +271,8 @@ export class SfClient {
 			);
 	}
 
-	async getTcmMembersFull() {
-		const data = await this.getMembersFullStmt.execute();
+	async getPinsFull() {
+		const data = await this.getFullPinsStmt.execute();
 		return this.compressPins(data);
 	}
 
@@ -294,34 +288,30 @@ export class SfClient {
 	}
 
 	async getTcmMemberDetails({
-		ids,
+		bounds,
 		sort,
 		search,
 		filters,
-		bounds
+		newPins
 	}: {
-		ids: string[];
+		bounds: { south: number; west: number; north: number; east: number };
 		sort?: string;
 		search: string;
 		filters: { [k in 'locations' | 'industries' | 'types']: string[] };
-		bounds: { south: number; west: number; north: number; east: number };
+		newPins: boolean;
 	}) {
 		const where = [];
+		const whereBounds = [];
 		const orderBy = [];
 
 		if (bounds && bounds.east < 180) {
 			const boundsX = [bounds.east, bounds.west];
 			const boundsY = [bounds.north, bounds.south];
 
-			where.push(sql`coords @ ST_MakeEnvelope(
+			whereBounds.push(sql`coords @ ST_MakeEnvelope(
 				${Math.min(...boundsX)}, ${Math.min(...boundsY)},
 				${Math.max(...boundsX)}, ${Math.max(...boundsY)},
 			4326)`);
-		}
-
-		let whereIds;
-		if (ids?.length) {
-			whereIds = inArray(accounts.Id, ids);
 		}
 
 		if (search) {
@@ -373,19 +363,22 @@ export class SfClient {
 		const full = await db
 			.select()
 			.from(accounts)
-			.where(and(whereIds, ...where))
+			.where(and(...whereBounds, ...where))
 			.orderBy(...orderBy)
 			.limit(50);
 
-		const pins = where.length
-			? await db
-					.select(this.pinsSelect)
-					.from(accounts)
-					.where(and(...where))
-					.orderBy(...orderBy)
-			: [];
+		let pins;
 
-		return { full, pins: this.compressPins(pins) };
+		if (newPins) {
+			pins = await (where.length
+				? await db
+						.select(this.pinsSelect)
+						.from(accounts)
+						.where(and(...where, isNotNull(accounts.coords)))
+				: this.getFullPinsStmt.execute());
+		}
+
+		return { full, ...(pins && { pins: this.compressPins(pins) }) };
 	}
 }
 

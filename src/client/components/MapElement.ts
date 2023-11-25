@@ -71,10 +71,10 @@ export default class MapElement extends LitElement {
 	private domParser = new DOMParser();
 
 	private makeMarker(
-		bounds: google.maps.LatLngBounds,
+		bounds: false | google.maps.LatLngBounds,
 		{ id, name, position }: Location
 	): AMElement {
-		bounds!.extend(position);
+		if (bounds) bounds.extend(position);
 
 		// A marker with a custom inline SVG.
 		const pinSvgString =
@@ -105,9 +105,12 @@ export default class MapElement extends LitElement {
 		return marker;
 	}
 
-	private async makeMarkers(data: PinTuple[]): Promise<AMElement[]> {
+	private async makeMarkers(
+		data: PinTuple[],
+		doRebound: boolean
+	): Promise<AMElement[]> {
 		const locations = data.map(this.mapDatumToLocation);
-		const bounds = new google.maps.LatLngBounds();
+		const bounds = doRebound && new google.maps.LatLngBounds();
 		const markers = locations.map(this.makeMarker.bind(this, bounds));
 
 		// TODO: use a Set here?
@@ -160,7 +163,7 @@ export default class MapElement extends LitElement {
 		const res = await fetch('http://localhost:3000/accounts');
 		const data = (await res.json()) as PinTuple[];
 
-		await this.makeMarkers(data);
+		await this.makeMarkers(data, false);
 
 		// lock the map on user input, until they filter out all the markers
 		this.map.addListener('drag', this.setMapLocked.bind(this));
@@ -176,7 +179,7 @@ export default class MapElement extends LitElement {
 		if (!changedProperties.has('filteredPins') || !this.map) return;
 
 		if (this.filteredPins && this.filteredPins.length > 0) {
-			await this.makeMarkers(this.filteredPins);
+			await this.makeMarkers(this.filteredPins, true);
 		} else {
 			this.markerCluster?.clearMarkers();
 		}
@@ -192,7 +195,7 @@ export default class MapElement extends LitElement {
 			bounds.extend({ lat, lng });
 		}
 
-		// todo: duplicate, refactor
+		// TODO: duplicate, refactor
 		this.autoPanning = true; // so we don't lock map
 		this.map?.fitBounds(bounds);
 		const idleListener = this.map?.addListener('idle', () => {

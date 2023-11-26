@@ -22,8 +22,10 @@ export default class LocationFilter extends LitElement {
 	render() {
 		return html`
 			<fieldset class="min-w-[16rem] space-y-4">
-				<legend class="text-sm text-gray-500">Filter by Location</legend>
-				<div class="flex space-x-6 px-1 py-0.5">
+				<legend class="hidden text-sm text-gray-500 md:mb-4 md:block">
+					Filter by Location
+				</legend>
+				<div class="!mt-0 flex space-x-6 px-1 py-0.5">
 					${(['regions', 'counties'] as levelOptions[]).map(
 						level => html`
 							<span
@@ -83,7 +85,7 @@ export default class LocationFilter extends LitElement {
 				</div>
 
 				<ul
-					class="max-h-60 w-full overflow-auto bg-white py-1 text-base shadow ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+					class="max-h-56 w-full overflow-auto bg-white py-1 text-base shadow ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm md:max-h-60"
 					id="options"
 					role="listbox"
 				>

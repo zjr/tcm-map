@@ -8,7 +8,7 @@ import './SortControl.ts';
 import './ActiveFilters.ts';
 import './FilterControl.ts';
 import './LocationFilter.ts';
-import './FilterDialogMobile.ts';
+import './mobile/FilterDialogMobile.ts';
 
 export interface IFilterOption {
 	value: string;
@@ -118,6 +118,7 @@ export default class FilterControls extends LitElement {
 		return html`
 			<filter-dialog-mobile
 				?open=${this.openMobileMenu}
+				.filterOptions=${this.filters}
 				@close-menu=${this.toggleMobileMenu}
 			></filter-dialog-mobile>
 			<section aria-labelledby="filter-heading">

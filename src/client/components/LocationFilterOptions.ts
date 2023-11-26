@@ -29,14 +29,11 @@ export default class LocationFilterOptions extends LitElement {
 		const selected = this.filters?.locations.has(hash);
 
 		return html`
-			<!--
-						Combobox option, manage highlight styles based on mouseenter/mouseleave and keyboard navigation.
-						Active: "text-white bg-indigo-600", Not Active: "text-gray-900"
-					-->
 			<li
 				class="${!selected
 					? 'hover:text-white hover:bg-tcmOrange-500'
-					: ''} relative cursor-pointer select-none py-3 pl-3.5 pr-9 text-gray-900"
+					: 'text-gray-900'} relative cursor-pointer select-none py-3 pl-3.5 pr-9 text-sm
+					text-gray-500 md:text-base md:text-gray-900"
 				id="option-0"
 				role="option"
 				tabindex="-1"

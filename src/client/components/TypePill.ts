@@ -35,7 +35,7 @@ export default class TypePill extends LitElement {
 
 		return html`
 			<span
-				class="${colorClass} inline-block w-max rounded-full bg-opacity-10 px-2 py-1 text-xs font-medium ring-1 ring-opacity-30"
+				class="${colorClass} inline-block w-max rounded-full bg-opacity-10 px-1.5 py-0.5 text-xs font-medium ring-1 ring-opacity-30 md:px-2 md:py-1"
 				>${industryLabel}</span
 			>
 		`;

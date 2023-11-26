@@ -58,10 +58,12 @@ export default class MemberElement extends LitElement {
 				<div class="flex">
 					<!--<img src="" alt="" class="h-14 w-14 rounded-full" />-->
 					<div class="flex flex-col justify-between gap-2.5">
-						<p class="text-lg font-bold leading-5 text-gray-800">
+						<p
+							class="-mt-px mb-px text-base font-bold leading-6 text-gray-800 md:mb-0 md:mt-0.5 md:text-lg md:leading-5"
+						>
 							${this.member.Name}
 						</p>
-						<p class="py-[3px] text-gray-500">
+						<p class="py-[3px] text-sm text-gray-500 md:text-base">
 							${this.member.npo02__MembershipJoinDate__c
 								? html`<span
 										>Member since
@@ -74,11 +76,15 @@ export default class MemberElement extends LitElement {
 						</p>
 					</div>
 				</div>
-				<div class="flex flex-col items-end justify-between gap-3 pt-px">
-					<p class="w-max max-w-[20ch] text-right text-gray-600">
+				<div
+					class="flex flex-col items-end justify-between gap-2 pt-0.5 md:gap-3 md:pt-px"
+				>
+					<p
+						class="w-max max-w-[20ch] text-right text-sm text-gray-600 md:my-0 md:text-base"
+					>
 						${memberLoc.length ? memberLoc.join(', ') : nothing}
 					</p>
-					<div class="flex flex-wrap justify-end gap-2">
+					<div class="mb-0.5 flex flex-wrap justify-end gap-2">
 						${memberIndustryPills}
 					</div>
 				</div>

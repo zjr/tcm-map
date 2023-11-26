@@ -31,6 +31,30 @@ export default class FilterDialogMobile extends TwElement {
 			this.open ? 'translate-x-0' : 'translate-x-full'
 		].join(' ');
 
+		const closeButton = html`
+			<button
+				@click=${this.emitCloseMenu}
+				type="button"
+				class="-mr-2 flex h-10 w-10 items-center justify-center rounded-md bg-white p-2 text-gray-400"
+			>
+				<span class="sr-only">Close menu</span>
+				<svg
+					class="h-6 w-6"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke-width="1.5"
+					stroke="currentColor"
+					aria-hidden="true"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						d="M6 18L18 6M6 6l12 12"
+					/>
+				</svg>
+			</button>
+		`;
+
 		return html`
 			<div class=${containerClasses} role="dialog" aria-modal="true">
 				<div class=${menuBackdropClasses}></div>
@@ -38,27 +62,7 @@ export default class FilterDialogMobile extends TwElement {
 					<div class=${menuClasses} @click=${(e: Event) => e.stopPropagation()}>
 						<div class="flex items-center justify-between px-4">
 							<h2 class="text-lg font-medium text-gray-900">Filters</h2>
-							<button
-								@click=${this.emitCloseMenu}
-								type="button"
-								class="-mr-2 flex h-10 w-10 items-center justify-center rounded-md bg-white p-2 text-gray-400"
-							>
-								<span class="sr-only">Close menu</span>
-								<svg
-									class="h-6 w-6"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke-width="1.5"
-									stroke="currentColor"
-									aria-hidden="true"
-								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										d="M6 18L18 6M6 6l12 12"
-									/>
-								</svg>
-							</button>
+							${closeButton}
 						</div>
 
 						<!-- Filters -->

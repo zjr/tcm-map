@@ -19,30 +19,6 @@ import './components/TypePill.ts';
 
 /**
  * TODO:
- * - [x] style the sort dropdown
- * - [x] add auto-close to sort dropdown
- * - [x] add state to the active filter bar
- * - [x] add a 'no filters' state the filter bar
- * - [x] drop the photos, at least for v1
- * - [x] email Nima/TCM about "type"
- * - [x] add the google map
- * - [x] connect to salesforce api
- * - [x] get lists
- * - [x] filter with industry
- * - [x] filter with type
- * - [x] filter with locations
- * - [x] search lists
- * - [x] style the google map's place pins
- * - [x] affect map by filtering / searching (establish og list, filter it)
- * - [x] move map to contain elements after filtering
- * - [x] add caching
- * - [x] load initial set to replace `results` array
- * - [x] prep for deployment
- * - [x] map jerks you around after it's been bounded
- * - [x] map doesn't include all the items that it should in full after filter
- * - [x] move map out if you filter w/o points in view
- * - [x] mobile UI
- * - [ ] add pagination
  * - [ ] (deploy) add some basic credential for reseed
  * - [ ] (deploy) replace api call locations with some env defined host, see: https://vitejs.dev/guide/build.html#public-base-path
  * - [ ] (deploy) deploy to TCM’s page

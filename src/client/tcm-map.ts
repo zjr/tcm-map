@@ -41,12 +41,12 @@ import './components/TypePill.ts';
  * - [x] map jerks you around after it's been bounded
  * - [x] map doesn't include all the items that it should in full after filter
  * - [x] move map out if you filter w/o points in view
- * - [ ] mobile UI
+ * - [x] mobile UI
  * - [ ] add pagination
- * - [ ] add some basic credential for reseed
- * - [ ] replace api call locations with some env defined host, see: https://vitejs.dev/guide/build.html#public-base-path
- * - [ ] deploy
- * - [ ] trigger reseed on cron
+ * - [ ] (deploy) add some basic credential for reseed
+ * - [ ] (deploy) replace api call locations with some env defined host, see: https://vitejs.dev/guide/build.html#public-base-path
+ * - [ ] (deploy) deploy to TCM’s page
+ * - [ ] (deploy) trigger reseed on cron
  */
 
 /**
@@ -101,9 +101,10 @@ export class TcmMap extends TwElement {
 	}
 
 	@state() members: DetailAccount[] = [];
-	@state() memberIds: string[] = [];
-	@state() filteredPins: PinTuple[] = [];
+	@state() nextBody: string | undefined = '';
+
 	@state() bounds: google.maps.LatLngBounds | undefined;
+	@state() filteredPins: PinTuple[] = [];
 
 	@state() initLoading: boolean = true;
 
@@ -114,8 +115,12 @@ export class TcmMap extends TwElement {
 			headers: { 'Content-Type': 'application/json' }
 		});
 
+		const data = await res.json();
+
+		this.members = data.full;
+		this.nextBody = data.next;
+
 		this.initLoading = false;
-		this.members = await res.json();
 	}
 
 	private async getMembers(
@@ -139,9 +144,10 @@ export class TcmMap extends TwElement {
 			)
 		});
 
-		const { full, pins } = await res.json();
+		const { full, pins, next } = await res.json();
 
 		this.members = full;
+		this.nextBody = next;
 		if (newPins) this.filteredPins = pins;
 
 		// no members in map bounds, but there are pins: rebound map;
@@ -155,6 +161,14 @@ export class TcmMap extends TwElement {
 			this.mapRef.value?.unlockAndReBound(this.filteredPins);
 		}
 	}
+
+	private _pagedMembers(
+		e: CustomEvent<{ full: DetailAccount[]; next: string }>
+	) {
+		this.members.push(...e.detail.full);
+		this.nextBody = e.detail.next;
+	}
+	pagedMembers = this._pagedMembers.bind(this);
 
 	mapRef: Ref<MapElement> = createRef();
 
@@ -180,6 +194,8 @@ export class TcmMap extends TwElement {
 					<members-list
 						class="h-full overflow-y-scroll"
 						.members=${this.members}
+						.nextBody=${this.nextBody}
+						@members-paged=${this.pagedMembers}
 					></members-list>
 				</div>
 				<map-element

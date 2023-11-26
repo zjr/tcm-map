@@ -280,26 +280,30 @@ export class SfClient {
 		.select()
 		.from(accounts)
 		.orderBy(asc(accounts.Name))
-		.limit(100)
+		.limit(101)
 		.prepare('get_initial');
 
 	async getTcmMembersInitial() {
-		return this.getInitialStmt.execute();
+		const full = await this.getInitialStmt.execute();
+
+		let next;
+		if (full.splice(100).length) {
+			next = JSON.stringify({ sort: 'Name#ASC', offset: 100 });
+		}
+
+		return { full, ...(next && { next }) };
 	}
 
-	async getTcmMemberDetails({
-		bounds,
-		sort,
-		search,
-		filters,
-		newPins
-	}: {
-		bounds: { south: number; west: number; north: number; east: number };
+	async getTcmMemberDetails(body: {
 		sort?: string;
-		search: string;
-		filters: { [k in 'locations' | 'industries' | 'types']: string[] };
+		search?: string;
+		filters?: { [k in 'locations' | 'industries' | 'types']: string[] };
+		bounds: { south: number; west: number; north: number; east: number };
+		offset: number;
 		newPins: boolean;
 	}) {
+		const { sort, search, filters, bounds, offset = 0, newPins } = body;
+
 		const where = [];
 		const whereBounds = [];
 		const orderBy = [];
@@ -318,7 +322,7 @@ export class SfClient {
 			where.push(ilike(accounts.Name, `%${search}%`));
 		}
 
-		if (filters.industries.length) {
+		if (filters?.industries.length) {
 			where.push(
 				or(
 					inArray(accounts.Industry_1__c, filters.industries),
@@ -328,13 +332,13 @@ export class SfClient {
 			);
 		}
 
-		if (filters.types.length) {
+		if (filters?.types.length) {
 			for (const type of filters.types) {
 				where.push(eq(accounts[type as SfOrgType], true));
 			}
 		}
 
-		if (filters.locations.length) {
+		if (filters?.locations.length) {
 			const locFilters: { [k: string]: string[] } = {
 				regions: [],
 				counties: []
@@ -365,20 +369,35 @@ export class SfClient {
 			.from(accounts)
 			.where(and(...whereBounds, ...where))
 			.orderBy(...orderBy)
-			.limit(50);
+			.limit(51)
+			.offset(offset);
 
-		let pins;
-
-		if (newPins) {
-			pins = await (where.length
-				? await db
-						.select(this.pinsSelect)
-						.from(accounts)
-						.where(and(...where, isNotNull(accounts.coords)))
-				: this.getFullPinsStmt.execute());
+		let next;
+		if (full.splice(50).length) {
+			next = JSON.stringify({
+				...body,
+				offset: offset + 50,
+				newPins: undefined
+			});
 		}
 
-		return { full, ...(pins && { pins: this.compressPins(pins) }) };
+		let pins;
+		if (newPins) {
+			pins = this.compressPins(
+				where.length
+					? await db
+							.select(this.pinsSelect)
+							.from(accounts)
+							.where(and(...where, isNotNull(accounts.coords)))
+					: await this.getFullPinsStmt.execute()
+			);
+		}
+
+		return {
+			full,
+			...(next && { next }),
+			...(pins && { pins })
+		};
 	}
 }
 

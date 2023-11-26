@@ -1,18 +1,22 @@
 import { html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
-import { DetailAccount } from '../../server/salesforce/SfClient';
+import { DetailAccount } from '../../server/salesforce/types';
 
 import './MemberElement.ts';
+import './LoadMoreButton.ts';
 
 @customElement('members-list')
 export default class MembersList extends LitElement {
 	@property()
 	members: DetailAccount[] = [];
 
+	@property({ attribute: false })
+	nextBody: string | undefined;
+
 	render() {
 		return html`
-			<div class="px-4 sm:px-6 lg:px-8">
+			<div class="flex flex-col px-4 sm:px-6 lg:px-8">
 				<ul
 					class="mb-4 divide-y-2 divide-dashed divide-gray-200 border-b-2 border-dashed border-b-gray-200 [&>*]:block"
 				>
@@ -20,6 +24,10 @@ export default class MembersList extends LitElement {
 						member => html`<member-element .member=${member}></member-element>`
 					)}
 				</ul>
+				<load-more-button
+					style="display: flex"
+					.nextBody=${this.nextBody}
+				></load-more-button>
 			</div>
 		`;
 	}

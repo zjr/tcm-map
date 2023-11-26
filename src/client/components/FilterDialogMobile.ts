@@ -65,39 +65,31 @@ export default class FilterDialogMobile extends TwElement {
 							${closeButton}
 						</div>
 
-						<!-- Filters -->
 						<form class="mt-4">
-							<div class="border-t border-gray-200 px-4 py-6">
-								<h3 class="-mx-2 -my-3 flow-root">
-									<!-- Expand/collapse section button -->
-									<button
-										type="button"
-										class="flex w-full items-center justify-between bg-white px-2 py-3 text-sm text-gray-400"
-										aria-controls="filter-section-0"
-										aria-expanded="false"
-									>
-										<span class="font-medium text-gray-900">Category</span>
-										<span class="ml-6 flex items-center">
-											<!--
-                    Expand/collapse icon, toggle classes based on section open state.
-
-                    Open: "-rotate-180", Closed: "rotate-0"
-                  -->
-											<svg
-												class="h-5 w-5 rotate-0 transform"
-												viewBox="0 0 20 20"
-												fill="currentColor"
-												aria-hidden="true"
-											>
-												<path
-													fill-rule="evenodd"
-													d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-													clip-rule="evenodd"
-												/>
-											</svg>
+							<details class="group border-t border-gray-200 px-4 py-6" open>
+								<summary class="block cursor-pointer">
+									<strong class="-mx-2 -my-3 flow-root">
+										<span
+											class="flex w-full items-center justify-between bg-white px-2 py-3 text-sm text-gray-400"
+										>
+											<span class="font-medium text-gray-900">Category</span>
+											<span class="ml-6 flex items-center">
+												<svg
+													class="h-5 w-5 rotate-0 transform transition-transform duration-300 group-open:rotate-180"
+													viewBox="0 0 20 20"
+													fill="currentColor"
+													aria-hidden="true"
+												>
+													<path
+														fill-rule="evenodd"
+														d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+														clip-rule="evenodd"
+													/>
+												</svg>
+											</span>
 										</span>
-									</button>
-								</h3>
+									</strong>
+								</summary>
 								<!-- Filter section, show/hide based on section state. -->
 								<div class="pt-6" id="filter-section-0">
 									<div class="space-y-6">
@@ -146,165 +138,7 @@ export default class FilterDialogMobile extends TwElement {
 										</div>
 									</div>
 								</div>
-							</div>
-							<div class="border-t border-gray-200 px-4 py-6">
-								<h3 class="-mx-2 -my-3 flow-root">
-									<!-- Expand/collapse section button -->
-									<button
-										type="button"
-										class="flex w-full items-center justify-between bg-white px-2 py-3 text-sm text-gray-400"
-										aria-controls="filter-section-1"
-										aria-expanded="false"
-									>
-										<span class="font-medium text-gray-900">Color</span>
-										<span class="ml-6 flex items-center">
-											<!--
-                    Expand/collapse icon, toggle classes based on section open state.
-
-                    Open: "-rotate-180", Closed: "rotate-0"
-                  -->
-											<svg
-												class="h-5 w-5 rotate-0 transform"
-												viewBox="0 0 20 20"
-												fill="currentColor"
-												aria-hidden="true"
-											>
-												<path
-													fill-rule="evenodd"
-													d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-													clip-rule="evenodd"
-												/>
-											</svg>
-										</span>
-									</button>
-								</h3>
-								<!-- Filter section, show/hide based on section state. -->
-								<div class="pt-6" id="filter-section-1">
-									<div class="space-y-6">
-										<div class="flex items-center">
-											<input
-												id="filter-mobile-color-0"
-												name="color[]"
-												value="white"
-												type="checkbox"
-												class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-											/>
-											<label
-												for="filter-mobile-color-0"
-												class="ml-3 text-sm text-gray-500"
-												>White</label
-											>
-										</div>
-										<div class="flex items-center">
-											<input
-												id="filter-mobile-color-1"
-												name="color[]"
-												value="beige"
-												type="checkbox"
-												class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-											/>
-											<label
-												for="filter-mobile-color-1"
-												class="ml-3 text-sm text-gray-500"
-												>Beige</label
-											>
-										</div>
-										<div class="flex items-center">
-											<input
-												id="filter-mobile-color-2"
-												name="color[]"
-												value="blue"
-												type="checkbox"
-												class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-											/>
-											<label
-												for="filter-mobile-color-2"
-												class="ml-3 text-sm text-gray-500"
-												>Blue</label
-											>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="border-t border-gray-200 px-4 py-6">
-								<h3 class="-mx-2 -my-3 flow-root">
-									<!-- Expand/collapse section button -->
-									<button
-										type="button"
-										class="flex w-full items-center justify-between bg-white px-2 py-3 text-sm text-gray-400"
-										aria-controls="filter-section-2"
-										aria-expanded="false"
-									>
-										<span class="font-medium text-gray-900">Sizes</span>
-										<span class="ml-6 flex items-center">
-											<!--
-                    Expand/collapse icon, toggle classes based on section open state.
-
-                    Open: "-rotate-180", Closed: "rotate-0"
-                  -->
-											<svg
-												class="h-5 w-5 rotate-0 transform"
-												viewBox="0 0 20 20"
-												fill="currentColor"
-												aria-hidden="true"
-											>
-												<path
-													fill-rule="evenodd"
-													d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-													clip-rule="evenodd"
-												/>
-											</svg>
-										</span>
-									</button>
-								</h3>
-								<!-- Filter section, show/hide based on section state. -->
-								<div class="pt-6" id="filter-section-2">
-									<div class="space-y-6">
-										<div class="flex items-center">
-											<input
-												id="filter-mobile-sizes-0"
-												name="sizes[]"
-												value="s"
-												type="checkbox"
-												class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-											/>
-											<label
-												for="filter-mobile-sizes-0"
-												class="ml-3 text-sm text-gray-500"
-												>S</label
-											>
-										</div>
-										<div class="flex items-center">
-											<input
-												id="filter-mobile-sizes-1"
-												name="sizes[]"
-												value="m"
-												type="checkbox"
-												class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-											/>
-											<label
-												for="filter-mobile-sizes-1"
-												class="ml-3 text-sm text-gray-500"
-												>M</label
-											>
-										</div>
-										<div class="flex items-center">
-											<input
-												id="filter-mobile-sizes-2"
-												name="sizes[]"
-												value="l"
-												type="checkbox"
-												class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-											/>
-											<label
-												for="filter-mobile-sizes-2"
-												class="ml-3 text-sm text-gray-500"
-												>L</label
-											>
-										</div>
-									</div>
-								</div>
-							</div>
+							</details>
 						</form>
 					</div>
 				</div>

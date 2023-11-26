@@ -97,10 +97,17 @@ export default class FilterControls extends LitElement {
 		super.disconnectedCallback();
 	}
 
+	@state() openMobileMenu: boolean = false;
+	private _toggleMobileMenu() {
+		this.openMobileMenu = !this.openMobileMenu;
+	}
+	toggleMobileMenu = this._toggleMobileMenu.bind(this);
+
 	render() {
 		// Mobile filter dialog toggle, controls the 'mobileFiltersOpen' state.
 		const mobileFilterDialogToggle = html`
 			<button
+				@click=${this.toggleMobileMenu}
 				type="button"
 				class="inline-block text-sm font-medium text-gray-700 hover:text-gray-900 sm:hidden"
 			>
@@ -109,7 +116,10 @@ export default class FilterControls extends LitElement {
 		`;
 
 		return html`
-			<filter-dialog-mobile></filter-dialog-mobile>
+			<filter-dialog-mobile
+				?open=${this.openMobileMenu}
+				@close-menu=${this.toggleMobileMenu}
+			></filter-dialog-mobile>
 			<section aria-labelledby="filter-heading">
 				<h2 id="filter-heading" class="sr-only">Filters</h2>
 				<div class="border-b border-gray-200 bg-white pb-4">

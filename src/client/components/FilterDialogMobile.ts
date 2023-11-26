@@ -7,10 +7,15 @@ export default class FilterDialogMobile extends TwElement {
 	@property({ type: Boolean })
 	open: boolean = false;
 
+	private _emitCloseMenu() {
+		this.dispatchEvent(new Event('close-menu', { bubbles: true }));
+	}
+	emitCloseMenu = this._emitCloseMenu.bind(this);
+
 	render() {
 		const containerClasses = [
 			'relative z-40 sm:hidden',
-			this.open ? '' : 'hidden'
+			this.open ? 'pointer-events-auto' : 'pointer-events-none'
 		].join(' ');
 
 		const menuBackdropClasses = [
@@ -27,39 +32,14 @@ export default class FilterDialogMobile extends TwElement {
 		].join(' ');
 
 		return html`
-			<!--
-				Mobile filter dialog
-
-				Off-canvas filters for mobile, show/hide based on off-canvas filters state.
-			-->
 			<div class=${containerClasses} role="dialog" aria-modal="true">
-				<!--
-					Off-canvas menu backdrop, show/hide based on off-canvas menu state.
-
-					Entering: "transition-opacity ease-linear duration-300"
-						From: "opacity-0"
-						To: "opacity-100"
-					Leaving: "transition-opacity ease-linear duration-300"
-						From: "opacity-100"
-						To: "opacity-0"
-				-->
 				<div class=${menuBackdropClasses}></div>
-
-				<div class="fixed inset-0 z-40 flex">
-					<!--
-						Off-canvas menu, show/hide based on off-canvas menu state.
-
-						Entering: "transition ease-in-out duration-300 transform"
-							From: "translate-x-full"
-							To: "translate-x-0"
-						Leaving: "transition ease-in-out duration-300 transform"
-							From: "translate-x-0"
-							To: "translate-x-full"
-					-->
-					<div class=${menuClasses}>
+				<div class="fixed inset-0 z-40 flex" @click=${this.emitCloseMenu}>
+					<div class=${menuClasses} @click=${(e: Event) => e.stopPropagation()}>
 						<div class="flex items-center justify-between px-4">
 							<h2 class="text-lg font-medium text-gray-900">Filters</h2>
 							<button
+								@click=${this.emitCloseMenu}
 								type="button"
 								class="-mr-2 flex h-10 w-10 items-center justify-center rounded-md bg-white p-2 text-gray-400"
 							>
@@ -326,6 +306,10 @@ export default class FilterDialogMobile extends TwElement {
 				</div>
 			</div>
 		`;
+	}
+
+	protected createRenderRoot(): HTMLElement | DocumentFragment {
+		return this;
 	}
 }
 

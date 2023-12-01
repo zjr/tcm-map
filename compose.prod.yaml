@@ -2,6 +2,6 @@ services:
   web:
     build:
       dockerfile: Dockerfile
-      target: migrate
+      target: build
     ports:
-      - '80:3000'
+      - '3000:3000'

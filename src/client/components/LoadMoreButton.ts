@@ -1,6 +1,8 @@
 import { html, LitElement } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 
+const baseURL = import.meta.env.VITE_BASE_URL;
+
 @customElement('load-more-button')
 export default class LoadMoreButton extends LitElement {
 	@property({ attribute: false })
@@ -15,7 +17,7 @@ export default class LoadMoreButton extends LitElement {
 
 		this.loading = true;
 
-		const res = await fetch('http://localhost:3000/accounts/filtered', {
+		const res = await fetch(new URL(`/accounts/filtered`, baseURL), {
 			method: 'post',
 			headers: { 'Content-Type': 'application/json' },
 			body: this.nextBody

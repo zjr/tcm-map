@@ -17,11 +17,13 @@ import './components/MembersList.ts';
 import './components/MapElement.ts';
 import './components/TypePill.ts';
 
+const baseURL = import.meta.env.VITE_BASE_URL;
+
 /**
  * TODO:
  * - [ ] (deploy) add some basic credential for reseed
- * - [ ] (deploy) replace api call locations with some env defined host, see: https://vitejs.dev/guide/build.html#public-base-path
- * - [ ] (deploy) deploy to TCM’s page
+ * - [x] (deploy) replace api call locations with some env defined host, see: https://vitejs.dev/guide/build.html#public-base-path
+ * - [x] (deploy) deploy to TCM’s page
  * - [ ] (deploy) trigger reseed on cron
  */
 
@@ -87,7 +89,7 @@ export class TcmMap extends TwElement {
 	async connectedCallback() {
 		super.connectedCallback();
 
-		const res = await fetch('http://localhost:3000/accounts/initial', {
+		const res = await fetch(new URL(`/accounts/initial`, baseURL), {
 			headers: { 'Content-Type': 'application/json' }
 		});
 
@@ -105,7 +107,7 @@ export class TcmMap extends TwElement {
 	) {
 		if (e?.detail.bounds) this.bounds = e.detail.bounds;
 
-		const res = await fetch('http://localhost:3000/accounts/filtered', {
+		const res = await fetch(new URL('/accounts/filtered', baseURL), {
 			method: 'post',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(

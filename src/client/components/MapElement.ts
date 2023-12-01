@@ -10,6 +10,8 @@ import debounce from 'lodash-es/debounce';
 import clusterRenderer from '../utils/clusterRenderer';
 import type { PinTuple } from '../../server/salesforce/types';
 
+const baseURL = import.meta.env.VITE_BASE_URL;
+
 type AMElement = google.maps.marker.AdvancedMarkerElement;
 type Location = {
 	id: string;
@@ -160,7 +162,7 @@ export default class MapElement extends LitElement {
 
 		this.infoWindow = new InfoWindow({ content: '', disableAutoPan: true });
 
-		const res = await fetch('http://localhost:3000/accounts');
+		const res = await fetch(new URL('/accounts', baseURL));
 		const data = (await res.json()) as PinTuple[];
 
 		await this.makeMarkers(data, false);

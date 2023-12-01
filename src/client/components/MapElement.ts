@@ -157,7 +157,8 @@ export default class MapElement extends LitElement {
 			mapId: 'tcm-map',
 			zoom: 6,
 			center: { lat: 37, lng: -119 },
-			gestureHandling: 'cooperative'
+			gestureHandling: 'cooperative',
+			minZoom: 3
 		});
 
 		this.infoWindow = new InfoWindow({ content: '', disableAutoPan: true });

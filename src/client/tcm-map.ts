@@ -40,11 +40,6 @@ export class TcmMap extends TwElement {
 		css`
 			:host {
 				display: block;
-				@media (min-width: 1024px) {
-					& {
-						height: 66vh;
-					}
-				}
 			}
 		`
 	];

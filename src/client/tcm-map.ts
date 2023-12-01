@@ -1,5 +1,3 @@
-import 'dotenv/config';
-
 import { css, html, nothing } from 'lit';
 import { provide } from '@lit/context';
 import { customElement, state } from 'lit/decorators.js';

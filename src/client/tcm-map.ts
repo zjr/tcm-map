@@ -166,7 +166,11 @@ export class TcmMap extends TwElement {
 						@set-sort=${this.setSort.bind(this)}
 						@filter-event=${this.setFilters.bind(this)}
 					></filter-controls>
-					${this.initLoading ? html`<p>Loading…</p>` : nothing}
+					${this.initLoading
+						? html`<p class="mx-auto my-6 text-center text-gray-600">
+								Loading…
+						  </p>`
+						: nothing}
 					<members-list
 						class="h-full overflow-y-scroll"
 						.members=${this.members}

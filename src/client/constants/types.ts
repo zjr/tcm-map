@@ -11,9 +11,9 @@ export const typeLabels: { [k: string]: string } = {
 export const types = [
 	'Advocacy_org_type__c',
 	'Business_org_type__c',
+	'Education_org_type__c',
 	'Faith_org_type__c',
 	'Government_org_type__c',
-	'Education_org_type__c',
 	'Nonprofit_org_type__c',
 	'Other_org_type__c'
 ];

@@ -2,14 +2,14 @@ export const regionLabels: { [k: string]: string } = {};
 
 export const regions = [
 	'Bay Area',
-	'Southern California',
+	'Central Coast',
+	'Central Sierra',
+	'Central Valley',
+	'Inland Empire',
+	'Northern California',
 	'Sacramento Valley',
 	'Southern Border',
-	'Central Valley',
-	'Central Coast',
-	'Northern California',
-	'Inland Empire',
-	'Unknown',
-	'Central Sierra',
-	'Out of State'
+	'Southern California',
+	'Out of State',
+	'Unknown'
 ];

@@ -154,7 +154,7 @@ export class TcmMap extends TwElement {
 		return html`
 			<div
 				id="root"
-				class="flex h-[120vh] flex-col-reverse overflow-hidden lg:h-full lg:flex-row"
+				class="flex aspect-video h-[120vh] flex-col-reverse overflow-hidden lg:h-full lg:flex-row"
 			>
 				<div
 					class="z-10 flex h-1/2 w-full flex-col bg-white font-sans shadow-2xl lg:h-full lg:w-[32rem]"

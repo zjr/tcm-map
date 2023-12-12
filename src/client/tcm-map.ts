@@ -22,8 +22,6 @@ const baseURL = import.meta.env.VITE_BASE_URL;
 /**
  * TODO:
  * - [ ] (deploy) add some basic credential for reseed
- * - [x] (deploy) replace api call locations with some env defined host, see: https://vitejs.dev/guide/build.html#public-base-path
- * - [x] (deploy) deploy to TCM’s page
  * - [ ] (deploy) trigger reseed on cron
  */
 
@@ -149,7 +147,7 @@ export class TcmMap extends TwElement {
 		return html`
 			<div
 				id="root"
-				class="flex h-[120vh] flex-col-reverse overflow-hidden lg:aspect-video lg:h-full lg:flex-row"
+				class="flex h-[120vh] flex-col-reverse overflow-hidden border border-gray-200 lg:aspect-video lg:h-full lg:flex-row"
 			>
 				<div
 					class="z-10 flex h-1/2 w-full flex-col bg-white font-sans shadow-2xl lg:h-full lg:w-[32rem]"

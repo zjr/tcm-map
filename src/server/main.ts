@@ -6,6 +6,8 @@ import cors from 'cors';
 
 import sfClient from './salesforce/SfClient';
 
+const reseedKey = process.env.RESEED_KEY;
+
 const app = express();
 app.use(cors());
 
@@ -44,9 +46,15 @@ app.post(
 
 app.get(
 	'/reseed',
-	asyncHandler(async (_, res) => {
-		await sfClient.reseedDatabase();
-		res.send('OK');
+	asyncHandler(async (req, res) => {
+		console.log(reseedKey);
+
+		if (req.header('x-reseed-token') !== reseedKey) {
+			res.sendStatus(401);
+		} else {
+			await sfClient.reseedDatabase();
+			res.send('OK');
+		}
 	})
 );
 

@@ -47,8 +47,6 @@ app.post(
 app.get(
 	'/reseed',
 	asyncHandler(async (req, res) => {
-		console.log(reseedKey);
-
 		if (req.header('x-reseed-token') !== reseedKey) {
 			res.sendStatus(401);
 		} else {

@@ -20,12 +20,6 @@ import './components/TypePill.ts';
 const baseURL = import.meta.env.VITE_BASE_URL;
 
 /**
- * TODO:
- * - [ ] (deploy) add some basic credential for reseed
- * - [ ] (deploy) trigger reseed on cron
- */
-
-/**
  * An example element.
  *
  * @slot - This element has a slot

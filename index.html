@@ -11,9 +11,12 @@
 			href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap"
 			rel="stylesheet"
 		/>
+		<!-- this loads the JavaScript that defines the custom element -->
+		<!-- update the base URL to your map instance -->
+		<!-- e.g., src="https://tcm-map.childrennow.org/tcm-map.umd.js" -->
 		<script type="module" src="src/client/tcm-map.ts"></script>
-		<!--		<link rel="stylesheet" href="http://localhost:3000/style.css">-->
-		<!--		<script type="module" src="http://localhost:3000/tcm-map.mjs"></script>-->
+		<!--<link rel="stylesheet" href="http://localhost:3000/style.css">-->
+		<!--<script type="module" src="http://localhost:3000/tcm-map.mjs"></script>-->
 	</head>
 	<body
 		style="
@@ -23,6 +26,7 @@
 			background: #f6faff;
 		"
 	>
+		<!-- the custom element, basically the 'hook'; the map will render here -->
 		<tcm-map></tcm-map>
 	</body>
 </html>

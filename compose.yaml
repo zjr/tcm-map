@@ -15,13 +15,14 @@ services:
     build:
       dockerfile: Dockerfile
       target: development
+      args:
+        DOTENV_KEY: 'dotenv://:key_64d89face112942ee68b4d786c0d4ceeba6ef0f013e5de0a85ed4c5208c1f846@dotenv.org/vault/.env.vault?environment=development'
     depends_on:
       - postgres
     secrets: *db_secrets
     environment:
       <<: *db_env
       PGHOST: postgres
-      DOTENV_KEY: 'dotenv://:key_64d89face112942ee68b4d786c0d4ceeba6ef0f013e5de0a85ed4c5208c1f846@dotenv.org/vault/.env.vault?environment=development'
 
 secrets:
   db_password:

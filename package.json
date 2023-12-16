@@ -5,7 +5,7 @@
 	"scripts": {
 		"dev": "nodemon --signal SIGINT src/server/main.ts -w src/server",
 		"start": "NODE_ENV=production ts-node src/server/main.ts",
-		"build": "vite build",
+		"build": "node -r dotenv/config ./node_modules/.bin/vite build",
 		"prepare": "[ -d '.husky' ] && husky install || true",
 		"commit": "commit",
 		"release": "standard-version",

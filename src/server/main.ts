@@ -50,7 +50,9 @@ app.get(
 		if (req.header('x-reseed-token') !== reseedKey) {
 			res.sendStatus(401);
 		} else {
+			console.log('[TCM-Map] running reseed…');
 			await sfClient.reseedDatabase();
+			console.log('[TCM-Map] reseed success!');
 			res.send('OK');
 		}
 	})

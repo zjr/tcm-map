@@ -1,4 +1,6 @@
 services:
+  postgres:
+    restart: always
   web:
     build:
       dockerfile: Dockerfile
@@ -7,3 +9,4 @@ services:
         DOTENV_KEY: 'dotenv://:key_3140a1b2b37abf2d65b40c6d70906f801587662b228f17aa89506f539bd20aa3@dotenv.org/vault/.env.vault?environment=production'
     ports:
       - '3000:3000'
+    restart: always

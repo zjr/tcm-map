@@ -80,7 +80,7 @@ export default class FilterDialogMobile extends LitElement {
 							<h2 class="text-lg font-medium text-gray-900">Filters</h2>
 							${closeButton}
 						</div>
-						<form class="mt-4 overflow-y-scroll overscroll-y-contain">
+						<form class="mt-4 overflow-y-auto overscroll-y-contain">
 							${filterControls}
 						</form>
 					</div>

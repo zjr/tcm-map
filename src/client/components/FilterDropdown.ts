@@ -56,7 +56,7 @@ export default class FilterButton extends TwElement {
 		const dropdownClasses = [
 			'absolute right-0 z-10 mt-2 origin-top-right bg-gray-50 p-4 scale-0',
 			'opacity-0 shadow-2xl ring-1 ring-black ring-opacity-5',
-			'focus:outline-none max-h-[26rem] overflow-y-scroll',
+			'focus:outline-none max-h-[26rem] overflow-y-auto',
 			this.open === null ? '' : this.open ? 'animate-pop' : 'animate-hide'
 		].join(' ');
 

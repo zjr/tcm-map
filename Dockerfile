@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 FROM node:20.9-alpine as install
-WORKDIR ./app
+WORKDIR /app
 
 COPY package.json package-lock.json ./
 RUN npm ci

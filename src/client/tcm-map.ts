@@ -161,7 +161,7 @@ export class TcmMap extends TwElement {
 						  </p>`
 						: nothing}
 					<members-list
-						class="h-full overflow-y-auto"
+						class="h-full overflow-y-auto overscroll-y-contain"
 						.members=${this.members}
 						.nextBody=${this.nextBody}
 						@members-paged=${this.pagedMembers}

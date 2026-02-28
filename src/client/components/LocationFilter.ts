@@ -85,7 +85,7 @@ export default class LocationFilter extends LitElement {
 				</div>
 
 				<ul
-					class="max-h-56 w-full overflow-auto bg-white py-1 text-base shadow ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm md:max-h-60"
+					class="max-h-56 w-full overflow-auto overscroll-y-contain bg-white py-1 text-base shadow ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm md:max-h-60"
 					id="options"
 					role="listbox"
 				>

@@ -10,7 +10,6 @@ const reseedKey = process.env.RESEED_KEY;
 
 const app = express();
 app.use(cors());
-
 app.use(express.json());
 
 function asyncHandler(
@@ -20,6 +19,9 @@ function asyncHandler(
 		return Promise.resolve(cb(req, res, next)).catch(next);
 	};
 }
+
+// turn away errant requests to the root
+app.get('/', (_, res) => res.sendStatus(404));
 
 app.get('/hello', (_, res) => res.send('Howdy!'));
 

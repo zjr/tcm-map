@@ -60,6 +60,11 @@ app.get(
 	})
 );
 
+if (process.env.NODE_ENV === 'production') {
+	const fileReg = /tcm-map\.*js/;
+	ViteExpress.config({ ignorePaths: path => !fileReg.test(path) });
+}
+
 const server = ViteExpress.listen(app, 3000, () =>
 	console.log('Server is listening on port 3000...')
 );

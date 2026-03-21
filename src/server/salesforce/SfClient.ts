@@ -200,7 +200,6 @@ export class SfClient {
 				Education_org_type__c,
 				Nonprofit_org_type__c,
 				Other_org_type__c,
-				County__c,
 				Region_2_0__c,
 				Logo__c,
 				Logo_Last_Confirmed__c,

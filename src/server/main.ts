@@ -5,6 +5,7 @@ import ViteExpress from 'vite-express';
 import cors from 'cors';
 
 import sfClient from './salesforce/SfClient';
+import dbClient from './db/DbClient';
 
 const reseedKey = process.env.RESEED_KEY;
 
@@ -28,21 +29,21 @@ app.get('/hello', (_, res) => res.send('Howdy!'));
 app.get(
 	'/accounts',
 	asyncHandler(async (_, res) => {
-		res.json(await sfClient.getPinsFull());
+		res.json(await dbClient.getPinsFull());
 	})
 );
 
 app.get(
 	'/accounts/initial',
 	asyncHandler(async (_, res) => {
-		res.json(await sfClient.getTcmMembersInitial());
+		res.json(await dbClient.getTcmMembersInitial());
 	})
 );
 
 app.post(
 	'/accounts/filtered',
 	asyncHandler(async (req, res) => {
-		res.json(await sfClient.getTcmMemberDetails(req.body));
+		res.json(await dbClient.getTcmMemberDetails(req.body));
 	})
 );
 

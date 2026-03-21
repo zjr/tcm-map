@@ -1,5 +1,6 @@
 // noinspection SqlNoDataSourceInspection
 import 'dotenv/config';
+import { inArray } from 'drizzle-orm';
 
 import { db } from '../db/database';
 import { accounts } from '../db/schema';
@@ -231,6 +232,29 @@ export class SfClient {
 				set: account
 			});
 		}
+	}
+
+	async cleanupDatabase() {
+		const query = `
+			SELECT
+				Id,
+				Name,
+				IsDeleted,
+				TCM_Member__c,
+			FROM
+				Account
+			WHERE
+				TCM_Member__c = false or
+				IsDeleted = true
+		`;
+
+		const url = this.getRestUrl('/query');
+		url.searchParams.set('q', query);
+
+		const data = await this.queryFetcher<DetailAccount>(url);
+		const ids = data.map(a => a.Id);
+
+		await db.delete(accounts).where(inArray(accounts.Id, ids));
 	}
 }
 

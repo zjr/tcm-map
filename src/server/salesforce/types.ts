@@ -50,6 +50,11 @@ export interface PartialAccount extends BareAccount {
 	BillingLongitude: number;
 }
 
+export interface CleanerAccount extends BareAccount {
+	IsDeleted: boolean;
+	TCM_Member__c: boolean;
+}
+
 export interface DetailAccount extends BareAccount {
 	coords?: Point;
 	BillingLatitude?: number;

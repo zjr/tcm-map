@@ -56,6 +56,11 @@ app.get(
 			console.log('[tcm-map] running reseed…');
 			await sfClient.reseedDatabase();
 			console.log('[tcm-map] reseed success!');
+
+			console.log('[tcm-map] running cleanup…');
+			await sfClient.cleanupDatabase();
+			console.log('[tcm-map] cleanup success!');
+
 			res.send('OK');
 		}
 	})

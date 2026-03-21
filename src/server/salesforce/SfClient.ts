@@ -239,7 +239,7 @@ export class SfClient {
 				Id,
 				Name,
 				IsDeleted,
-				TCM_Member__c,
+				TCM_Member__c
 			FROM
 				Account
 			WHERE

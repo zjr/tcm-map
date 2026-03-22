@@ -2,11 +2,14 @@ services:
   postgres:
     restart: always
   web:
+    command: dotenvx run -f .env.production -- npm run start
     build:
       dockerfile: Dockerfile
       target: build
       args:
-        DOTENV_KEY: 'dotenv://:key_3140a1b2b37abf2d65b40c6d70906f801587662b228f17aa89506f539bd20aa3@dotenv.org/vault/.env.vault?environment=production'
+        ENV_FILE: '.env.production'
     ports:
       - '3000:3000'
     restart: always
+    environment:
+      DOTENV_PRIVATE_KEY_PRODUCTION: ${DOTENV_PRIVATE_KEY_PRODUCTION}

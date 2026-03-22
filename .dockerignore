@@ -3,7 +3,5 @@ node_modules
 
 .flaskenv*
 
-# Dot ENV Vaulting
-.env*
-!.env.project
-!.env.vault
+# dotenvx
+.env.keys

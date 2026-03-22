@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+
+version: '3'
+
+tasks:
+  deploy:
+    desc: deploy to production
+    dotenv: ['.env.keys']
+    prompt:
+      - Deploying to production, confirm?
+    cmds:
+      - git push prod -o "$DOTENV_PRIVATE_KEY_PRODUCTION" {{.CLI_ARGS}}

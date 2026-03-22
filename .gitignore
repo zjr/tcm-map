@@ -11,6 +11,7 @@ node_modules
 dist
 dist-ssr
 *.local
+.flaskenv*
 
 # Editor directories and files
 .vscode/*
@@ -25,10 +26,7 @@ dist-ssr
 
 .salesforce.schema.gql
 
-.env*
-.flaskenv*
-!.env.project
-!.env.vault
+.env.keys
 
 .secrets
 !.secrets/*.example.*

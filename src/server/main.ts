@@ -1,5 +1,3 @@
-import 'dotenv/config';
-
 import express, { NextFunction, Request, Response } from 'express';
 import ViteExpress from 'vite-express';
 import cors from 'cors';
@@ -60,7 +58,6 @@ app.get(
 			console.log('[tcm-map] running cleanup…');
 			await sfClient.cleanupDatabase();
 			console.log('[tcm-map] cleanup success!');
-
 			res.send('OK');
 		}
 	})

@@ -1,5 +1,4 @@
 // noinspection SqlNoDataSourceInspection
-import 'dotenv/config';
 import { inArray } from 'drizzle-orm';
 
 import { db } from '../db/database';

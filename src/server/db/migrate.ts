@@ -1,5 +1,3 @@
-import 'dotenv/config';
-
 import path from 'path';
 
 import postgres from 'postgres';

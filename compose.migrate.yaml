@@ -21,7 +21,6 @@ services:
     environment:
       <<: *db_env
       PGHOST: postgres
-      DOTENV_KEY: 'dotenv://:key_3140a1b2b37abf2d65b40c6d70906f801587662b228f17aa89506f539bd20aa3@dotenv.org/vault/.env.vault?environment=production'
 
 secrets:
   db_password:
